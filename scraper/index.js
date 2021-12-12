@@ -33,11 +33,11 @@ module.exports = {
             const timeline = await $('.timeline');
 
             $('.timeline__item', timeline).each(function() {
-                const url = $(this).attr('href')
+                const url = provider.baseUrl + $(this).attr('href')
                 const title = $(this).find('.card__title-inside').text()
                 const summary = $(this).find('.card__summary').text()
                 const category = $(this).find('.card__label').text()
-                const image = $(this).find('img').attr('src')
+                const image = provider.baseUrl + $(this).find('img').attr('src')
 
                 news.push({
                     url,
@@ -60,7 +60,7 @@ module.exports = {
         const timeline = await $('.timeline');
 
         $('.paginator_item', timeline).each(function() {
-            const url = $(this).find('.article_teaser_timeline__title_link').attr('href')
+            const url = provider.baseUrl + $(this).find('.article_teaser_timeline__title_link').attr('href')
             const title = $(this).find('.article_teaser_timeline__title_text').text().trim()
             const summary = $(this).find('.article_teaser_timeline__subtitle_text').text().trim()
             const category = $(this).find('.article_supertitle').text().trim()
@@ -75,9 +75,9 @@ module.exports = {
 
         for (let i = 0; i < articles.length; i++) {
             const article = articles[i];
-            const articleResponse = await axios(provider.baseUrl + article.url);
+            const articleResponse = await axios(article.url);
             const $ = cheerio.load(articleResponse.data)
-            const image =  await $('.article__img_tag').attr('src');
+            const image =  await provider.baseUrl + $('.article__img_tag').attr('src');
             article.image = image;
         }
         console.log(articles)
@@ -91,11 +91,11 @@ module.exports = {
         const timeline = await $('.timemachine__article_list');
 
         $('.timemachine__article_item', timeline).each(function() {
-            const url = $(this).find('.card__link').attr('href')
+            const url = provider.baseUrl + $(this).find('.card__link').attr('href')
             const title = $(this).find('.card__title').text().trim()
             const summary = $(this).find('.card__description').text().trim()
             const category = $(this).find('.card__overtitle').text().trim()
-            const image =  $(this).find('.rspimg').attr('src');
+            const image = provider.baseUrl + $(this).find('.rspimg').attr('src')
 
             articles.push({
                 url,
