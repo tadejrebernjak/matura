@@ -45,13 +45,13 @@ module.exports = {
             $('.timeline__item', timeline).each(function() {
                 const source = '24ur'
                 const url = provider.baseUrl + $(this).attr('href')
-                const title = $(this).find('.card__title-inside').text()
-                const date = $(this).find('.timeline__date').text()
+                const title = $(this).find('.card__title-inside').text().trim()
+                const date = $(this).find('.timeline__date').text().trim()
                 let time = $(this).find('.timeline__time').text().trim()
                 time = time.split(' ').pop()
-                const summary = $(this).find('.card__summary').text()
-                const category = $(this).find('.card__label').text()
-                const image = provider.baseUrl + $(this).find('img').attr('src')
+                const summary = $(this).find('.card__summary').text().trim()
+                const category = $(this).find('.card__label').text().trim()
+                const image = $(this).find('img').attr('src')
 
                 articles.push({
                     source,
@@ -78,7 +78,10 @@ module.exports = {
 
         $('.paginator_item', timeline).each(function() {
             const source = 'Delo'
-            const url = provider.baseUrl + $(this).find('.article_teaser_timeline__title_link').attr('href')
+            let url = $(this).find('.article_teaser_timeline__title_link').attr('href')
+            if (extractHostname(url) == "") {
+                url = provider.baseUrl + url;
+            }
             const title = $(this).find('.article_teaser_timeline__title_text').text().trim()
             const date = $(this).find('.article_teaser_timeline__date_holder').text().trim()
             const time = $(this).find('.article_teaser_timeline__time_holder').text().trim()
@@ -100,7 +103,7 @@ module.exports = {
             const article = articles[i];
             const articleResponse = await axios(article.url);
             const $ = cheerio.load(articleResponse.data)
-            const image =  await provider.baseUrl + $('.article__img_tag').attr('src');
+            const image =  await 'https://' + extractHostname(article.url) + $('.article__img_tag').attr('src');
             article.image = image;
         }
         console.log(articles)
@@ -205,6 +208,14 @@ module.exports = {
             })
         })
         console.log(articles)
+    },
+
+    test: () => {
+        let result = {
+            first: 'hello',
+            second: ' world'
+        }
+        return result
     }
 };
 
