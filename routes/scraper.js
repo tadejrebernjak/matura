@@ -26,10 +26,23 @@ router.get('/slovenskenovice', async (req, res) => {
     res.send(articles);
 });
 
-/*router.get('/dnevnik', async (req, res) => {
+router.get('/dnevnik', async (req, res) => {
     let articles = await scraper_controller.scrapeDnevnik();
     res.send(articles);
-});*/
+});
+
+router.get('/all', async (req, res) => {
+    let stirindvajstur = await scraper_controller.scrape24ur();
+    let delo = await scraper_controller.scrapeDelo();
+    let siol = await scraper_controller.scrapeSiol();
+    let slovenskenovice = await scraper_controller.scrapeSlovenskeNovice();
+    
+    let articles = [...stirindvajstur, ...delo, ...siol, ...slovenskenovice];
+   
+    articles.sort((a, b) => b.timestamp - a.timestamp);
+
+    res.send(articles);
+});
 
 /*router.post('/create', scraper_controller.product_create);
 

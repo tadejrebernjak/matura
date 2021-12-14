@@ -1,6 +1,5 @@
 const axios = require('axios')
 const cheerio = require('cheerio');
-const { next } = require('cheerio/lib/api/traversing');
 
 const settings = {
     providers: [
@@ -34,110 +33,131 @@ const settings = {
 
 exports.scrape24ur = async function(req, res) {
     const provider = settings.providers.find(provider => provider.name === "24ur");
-    const articlesResponse = await axios(provider.url);
-    var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
-    const timeline = await $('.timeline');
+    try {
+        const articlesResponse = await axios(provider.url);
+        var $ = cheerio.load(articlesResponse.data);
+        const articles = [];
+        const timeline = await $('.timeline');
 
-    $('.timeline__item', timeline).each(function() {
-        const source = '24ur';
-        const url = provider.baseUrl + $(this).attr('href');
-        const title = $(this).find('.card__title-inside').text().trim();
-        const date = $(this).find('.timeline__date').text().trim();
-        let time = $(this).find('.timeline__time').text().trim();
-        time = time.split(' ').pop();
-        const summary = $(this).find('.card__summary').text().trim();
-        const category = $(this).find('.card__label').text().trim();
-        const image = $(this).find('img').attr('src');
+        $('.timeline__item', timeline).each(function() {
+            const source = '24ur';
+            const url = provider.baseUrl + $(this).attr('href');
+            const title = $(this).find('.card__title-inside').text().trim();
+            let date = $(this).find('.timeline__date').text().trim();
+            let time = $(this).find('.timeline__time').text().trim();
+            date = date.replace(/\s+/g, '');
+            time = time.split(' ').pop();
+            const timestamp = getTimestamp(date, time);
+            const summary = $(this).find('.card__summary').text().trim();
+            const category = $(this).find('.card__label').text().trim();
+            const image = $(this).find('img').attr('src');
 
-        articles.push({
-            source,
-            url,
-            title,
-            date,
-            time,
-            summary,
-            category,
-            image
+            articles.push({
+                source,
+                url,
+                title,
+                date,
+                time,
+                timestamp,
+                summary,
+                category,
+                image
+            });
         });
-    });
-    return articles;
+        return articles;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 exports.scrapeDelo = async function(req, res) {
     const provider = settings.providers.find(provider => provider.name === "delo");
-    const articlesResponse = await axios(provider.url);
-    var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
-    const timeline = await $('.timeline');
+    try {
+        const articlesResponse = await axios(provider.url);
+        var $ = cheerio.load(articlesResponse.data);
+        const articles = [];
+        const timeline = await $('.timeline');
 
-    $('.paginator_item', timeline).each(function() {
-        const source = 'Delo';
-        let url = $(this).find('.article_teaser_timeline__title_link').attr('href');
-        if (extractHostname(url) == "") {
-            url = provider.baseUrl + url;
+        $('.paginator_item', timeline).each(function() {
+            const source = 'Delo';
+            let url = $(this).find('.article_teaser_timeline__title_link').attr('href');
+            if (extractHostname(url) == "") {
+                url = provider.baseUrl + url;
+            }
+            const title = $(this).find('.article_teaser_timeline__title_text').text().trim();
+            const date = $(this).find('.article_teaser_timeline__date_holder').text().trim();
+            const time = $(this).find('.article_teaser_timeline__time_holder').text().trim();
+            const timestamp = getTimestamp(date, time);
+            const summary = $(this).find('.article_teaser_timeline__subtitle_text').text().trim();
+            const category = $(this).find('.article_supertitle').text().trim();
+
+            articles.push({
+                source,
+                url,
+                title,
+                date,
+                time,
+                timestamp,
+                summary,
+                category
+            });
+        })
+
+        for (let i = 0; i < articles.length; i++) {
+            const article = articles[i];
+            const articleResponse = await axios(article.url);
+            const $ = cheerio.load(articleResponse.data);
+            const image =  await 'https://' + extractHostname(article.url) + $('.article__img_tag').attr('src');
+            article.image = image;
         }
-        const title = $(this).find('.article_teaser_timeline__title_text').text().trim();
-        const date = $(this).find('.article_teaser_timeline__date_holder').text().trim();
-        const time = $(this).find('.article_teaser_timeline__time_holder').text().trim();
-        const summary = $(this).find('.article_teaser_timeline__subtitle_text').text().trim();
-        const category = $(this).find('.article_supertitle').text().trim();
-
-        articles.push({
-            source,
-            url,
-            title,
-            date,
-            time,
-            summary,
-            category
-        });
-    })
-
-    for (let i = 0; i < articles.length; i++) {
-        const article = articles[i];
-        const articleResponse = await axios(article.url);
-        const $ = cheerio.load(articleResponse.data);
-        const image =  await 'https://' + extractHostname(article.url) + $('.article__img_tag').attr('src');
-        article.image = image;
-    }
-    return articles;
+        return articles;
+    } catch (error) {
+        console.log(error);
+    } 
 }
 
 exports.scrapeSiol = async function() {
     const provider = settings.providers.find(provider => provider.name === "siol");
-    const articlesResponse = await axios(provider.url);
-    var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
-    const timeline = await $('.timemachine__article_list');
+    try {
+        const articlesResponse = await axios(provider.url);
+        var $ = cheerio.load(articlesResponse.data);
+        const articles = [];
+        const timeline = await $('.timemachine__article_list');
 
-    $('.timemachine__article_item', timeline).each(function() {
-        const source = 'Siol';
-        const url = provider.baseUrl + $(this).find('.card__link').attr('href');
-        const title = $(this).find('.card__title').text().trim();
-        const today = new Date();
-        const date = today.getDate() + '.' + (today.getMonth() + 1) + '.' + today.getFullYear();
-        const time = $(this).find('.card__time').text().trim();
-        const summary = $(this).find('.card__description').text().trim();
-        const category = $(this).find('.card__overtitle').text().trim();
-        const image = provider.baseUrl + $(this).find('.rspimg').attr('src');
+        $('.timemachine__article_item', timeline).each(function() {
+            const source = 'Siol';
+            const url = provider.baseUrl + $(this).find('.card__link').attr('href');
+            const title = $(this).find('.card__title').text().trim();
+            const today = new Date();
+            const date = today.getDate() + '.' + (today.getMonth() + 1) + '.' + today.getFullYear();
+            const time = $(this).find('.card__time').text().trim();
+            const timestamp = getTimestamp(date, time);
+            const summary = $(this).find('.card__description').text().trim();
+            const category = $(this).find('.card__overtitle').text().trim();
+            const image = provider.baseUrl + $(this).find('.rspimg').attr('src');
 
-        articles.push({
-            source,
-            url,
-            title,
-            date,
-            time,
-            summary,
-            category,
-            image
-        });
-    })
-    return articles;
+            articles.push({
+                source,
+                url,
+                title,
+                date,
+                time,
+                timestamp,
+                summary,
+                category,
+                image
+            });
+        })
+        return articles;
+    } catch (error) {
+        console.log(error);
+    }
+    
 }
 
 exports.scrapeSlovenskeNovice = async function(req, res) {
     const provider = settings.providers.find(provider => provider.name === "slovenskeNovice");
+    try {
         const articlesResponse = await axios(provider.url);
         var $ = cheerio.load(articlesResponse.data);
         const articles = [];
@@ -153,7 +173,7 @@ exports.scrapeSlovenskeNovice = async function(req, res) {
                 const summary = $(this).find('.article_teaser_timeline__subtitle_text').text().trim();
                 const date = $(this).find('.article_teaser_timeline__date_holder').text().trim();
                 const time = $(this).find('.article_teaser_timeline__time_holder').text().trim();
-                //ADD CATEGORY
+                const timestamp = getTimestamp(date, time);
                 const category = extractUrlCategory(url);
 
                 articles.push({
@@ -162,6 +182,7 @@ exports.scrapeSlovenskeNovice = async function(req, res) {
                     title,
                     date,
                     time,
+                    timestamp,
                     summary,
                     category
                 });
@@ -176,34 +197,40 @@ exports.scrapeSlovenskeNovice = async function(req, res) {
             article.image = image;
         }
     return articles;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 // NOT WORKING - can't find elements inside timeline
 exports.scrapeDnevnik = async function () {
     const provider = settings.providers.find(provider => provider.name === "dnevnik");
-    const articlesResponse = await axios(provider.url);
+    try {
+        const articlesResponse = await axios(provider.url);
+        var $ = cheerio.load(articlesResponse.data);
+        const articles = [];
 
-    var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
+        $('.tl-article', articlesResponse.data).each(function() {
+            const source = "Dnevnik";
+            const url = provider.baseUrl + $(this).find('h2 > a').attr('href');
+            const title = $(this).find('h2 > a').text().trim();
+            const summary = $(this).find('p').text().trim();
+            const category = $(this).find('.news-item-category').text().trim();
+            const image = provider.baseUrl + $(this).find('img').attr('src');
 
-    $('.tl-article', articlesResponse.data).each(function() {
-        const source = "Dnevnik";
-        const url = provider.baseUrl + $(this).find('h2 > a').attr('href');
-        const title = $(this).find('h2 > a').text().trim();
-        const summary = $(this).find('p').text().trim();
-        const category = $(this).find('.news-item-category').text().trim();
-        const image = provider.baseUrl + $(this).find('img').attr('src');
-
-        articles.push({
-            source,
-            url,
-            title,
-            summary,
-            category,
-            image
-        });
-    })
-    return articles;
+            articles.push({
+                source,
+                url,
+                title,
+                summary,
+                category,
+                image
+            });
+        })
+        return articles;
+    } catch (error) {
+        console.log(error);
+    } 
 }
 
 function extractHostname(url) {
@@ -231,6 +258,28 @@ function extractUrlCategory(url) {
     category = url.split('/');
 
     return category[3];
+}
+
+function getTimestamp(date, time) {
+    const toTimestamp = (strDate) => {  
+        const dt = Date.parse(strDate);  
+        return dt / 1000;  
+    }
+
+    const dateSplit = date.split('.');
+
+    let day = dateSplit[0];
+    if (day < 10)
+        day = "0" + day;
+
+    let month = dateSplit[1];
+    if (month < 10)
+        month = "0" + month;
+
+    const year = dateSplit[2];
+
+    const timestamp = toTimestamp(month + "/" + day + "/" + year + " " + time + ":00");
+    return timestamp;
 }
 
 exports.uploadArticles = function (req, res) {
