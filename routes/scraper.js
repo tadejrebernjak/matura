@@ -41,6 +41,8 @@ router.get('/all', async (req, res) => {
    
     articles.sort((a, b) => b.timestamp - a.timestamp);
 
+    let dbArticles = await scraper_controller.readArticles();
+
     res.send(articles);
 });
 

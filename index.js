@@ -1,14 +1,21 @@
-const express = require('express')
+require('dotenv').config();
+
+const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const scrapperHelper = require('./scraper')
+
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
+const db = mongoose.connection;
+
+db.on('error', (error) => console.error(error));
+db.once('open', () => console.log('Connected to db'));
 
 const scraperRouter = require('./routes/scraper');
 
+const port = 5000;  
 
-const port = 5000
-
-const app = express()
+const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));

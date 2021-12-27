@@ -279,9 +279,10 @@ function getTimestamp(date, time) {
     const year = dateSplit[2];
 
     const timestamp = toTimestamp(month + "/" + day + "/" + year + " " + time + ":00");
-    return timestamp;
+    const dateObject = new Date(timestamp);
+    return dateObject;
 }
 
-exports.uploadArticles = function (req, res) {
-    console.log("uploading...")
+exports.readArticles = function (req, res) {
+    
 }
