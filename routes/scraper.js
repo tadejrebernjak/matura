@@ -1,10 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
-// Require the controllers WHICH WE DID NOT CREATE YET!!
 var scraper_controller = require("../controllers/scraper");
 
-// a simple test url to check that all of our files are communicating correctly.
 router.get("/24ur", async (req, res) => {
   let articles = await scraper_controller.scrape24ur();
 
@@ -53,12 +51,6 @@ router.get("/all", async (req, res) => {
   articles.sort((a, b) => b.timestamp - a.timestamp);
 
   scraper_controller.insertArticles(articles);
-
-  res.send(articles);
-});
-
-router.get("/find", async (req, res) => {
-  let articles = await scraper_controller.findArticles();
 
   res.send(articles);
 });

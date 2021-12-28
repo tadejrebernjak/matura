@@ -343,19 +343,10 @@ function getTimestamp(date, time) {
   return dateObject;
 }
 
-exports.findArticles = async function () {
-  try {
-    let articles = await Article.find({});
-    return articles;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 exports.insertArticles = async function (articles) {
   try {
     articles.forEach((article) => {
-      Article.countDocuments({ url: article.url }, function (error, count) {
+      Article.countDocuments({ url: article.url }, function (err, count) {
         if (count === 0) {
           article.save(function (error) {
             if (error) {

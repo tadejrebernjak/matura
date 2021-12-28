@@ -1,7 +1,10 @@
 var mongoose = require("mongoose");
 
 var ReplySchema = new mongoose.Schema({
-  userID: mongoose.SchemaTypes.ObjectId,
+  userID: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "User",
+  },
   username: String,
   body: String,
   createdAt: Date,
@@ -11,7 +14,10 @@ var ReplySchema = new mongoose.Schema({
 });
 
 var CommentSchema = new mongoose.Schema({
-  userID: mongoose.SchemaTypes.ObjectId,
+  userID: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "User",
+  },
   username: String,
   body: String,
   createdAt: Date,
