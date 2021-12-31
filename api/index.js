@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
@@ -21,6 +22,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors());
 
 app.use("/scraper", scraperRouter);
 app.use("/articles", articlesRouter);

@@ -168,7 +168,6 @@ exports.scrapeSiol = async function () {
       const timestamp = getTimestamp(date, time);
       const summary = $(this).find(".card__description").text().trim();
       const category = $(this).find(".card__overtitle").text().trim();
-      const image = provider.baseUrl + $(this).find(".rspimg").attr("src");
 
       const article = new Article({
         source: source,
@@ -179,11 +178,21 @@ exports.scrapeSiol = async function () {
         timestamp: timestamp,
         summary: summary,
         category: category,
-        image: image,
       });
 
       articles.push(article);
     });
+
+    for (let i = 0; i < articles.length; i++) {
+      const article = articles[i];
+      const articleResponse = await axios(article.url);
+      const $ = cheerio.load(articleResponse.data);
+      const image =
+        (await provider.baseUrl) +
+        $(".article__figure").find("img").attr("src");
+      article.image = image;
+    }
+
     return articles;
   } catch (error) {
     console.log(error);

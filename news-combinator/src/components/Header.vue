@@ -31,6 +31,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .account-btn {
-  @apply p-2 mx-2 w-36 rounded-sm bg-green-400 hover:bg-green-500 text-lg hover:text-white transition duration-300;
+  @apply p-2 mx-2 w-36 rounded-sm bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-lg text-white transition duration-300;
 }
 </style>
