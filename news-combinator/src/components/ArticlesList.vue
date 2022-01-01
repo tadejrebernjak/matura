@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid md:grid-cols-3 sm:grid-cols-2 gap-4 grid-flow-row place-content-center"
+    class="grid md:grid-cols-3 sm:grid-cols-2 gap-4 grid-flow-row place-content-center my-10"
   >
     <div
       class="card"
@@ -37,7 +37,7 @@
 import ArticlesService from "../articlesService";
 
 export default {
-  name: "Articles",
+  name: "ArticlesList",
   data() {
     return {
       articles: [],
@@ -62,7 +62,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .card {
-  @apply w-full max-w-sm inline m-1 my-3 border border-gray-400 relative bg-gray-50 shadow-xl;
+  @apply w-full max-w-sm inline border border-gray-400 relative bg-gray-50 shadow-xl;
 }
 
 .card-body {

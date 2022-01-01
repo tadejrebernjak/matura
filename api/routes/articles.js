@@ -9,6 +9,8 @@ router.get("/", async (req, res) => {
   res.send(articles);
 });
 
+router.get("/:id", articles_controller.getArticleById);
+
 /*router.post('/create', scraper_controller.product_create);
 
 router.get('/:id', scraper_controller.product_details);

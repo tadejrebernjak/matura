@@ -8,3 +8,12 @@ exports.getArticles = async function () {
     console.log(error);
   }
 };
+
+exports.getArticleById = async function (req, res) {
+  try {
+    let article = await Article.find({ _id: req.params.id });
+    res.send(article[0]);
+  } catch (error) {
+    res.send(error);
+  }
+};

@@ -1,15 +1,15 @@
 <template>
-  <Articles />
+  <ArticlesList />
 </template>
 
 <script>
 // @ is an alias to /src
-import Articles from "@/components/Articles";
+import ArticlesList from "@/components/ArticlesList";
 
 export default {
   name: "Home",
   components: {
-    Articles,
+    ArticlesList,
   },
 };
 </script>
