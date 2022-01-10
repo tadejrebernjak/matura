@@ -27,8 +27,9 @@
       </div>
       <div class="comment-foot">
         <div class="flex items-center justify-center">
-          <button class="reply-button" v-on:click="newReplyShow">
-            <i class="fas fa-reply"></i> Odgovori
+          <button class="reply-button" @click="newReplyToggle">
+            <span v-if="!replying"><i class="fas fa-reply"></i> Odgovori</span>
+            <span v-else><i class="fas fa-window-close"></i> Skrij</span>
           </button>
         </div>
         <div
@@ -36,14 +37,14 @@
         >
           <div
             class="text-center hover:text-gray-500 cursor-pointer transition-all duration-300"
-            v-on:click="$emit('like', index)"
+            @click="$emit('like', index)"
           >
             <i class="fas fa-thumbs-up text-2xl"></i>
             <p>{{ comment.likes.length }}</p>
           </div>
           <div
             class="text-center hover:text-gray-500 cursor-pointer transition-all duration-300"
-            v-on:click="$emit('dislike', index)"
+            @click="$emit('dislike', index)"
           >
             <i class="fas fa-thumbs-down text-2xl"></i>
             <p>{{ comment.dislikes.length }}</p>
@@ -51,15 +52,36 @@
         </div>
       </div>
       <div class="reply" v-if="replying">
-        <textarea name="wawaw" id="" cols="30" rows="10"></textarea>
+        <textarea
+          class="reply-text-area"
+          v-model="newReply"
+          rows="4"
+          placeholder="Napišite odgovor zgornjem komentarju!"
+        ></textarea>
+        <button class="new-reply-btn" @click="addReply">Odgovori</button>
+      </div>
+      <div class="replies">
+        <CommentReply
+          v-for="(reply, index) in comment.replies"
+          :reply="reply"
+          :index="index"
+          :key="reply.userID"
+          @like="likeReply"
+          @dislike="dislikeReply"
+        ></CommentReply>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import CommentReply from "../components/CommentReply";
+
 export default {
   name: "Comment",
+  components: {
+    CommentReply,
+  },
   props: {
     comment: Object,
     index: Number,
@@ -68,11 +90,26 @@ export default {
   data: function () {
     return {
       replying: false,
+      newReply: "",
     };
   },
+  emits: ["addReply", "likeReply", "dislikeReply"],
   methods: {
-    newReplyShow() {
-      this.replying = true;
+    newReplyToggle() {
+      this.replying = !this.replying;
+    },
+    addReply() {
+      if (this.newReply.trim() != "") {
+        this.$emit("addReply", this.newReply, this.index);
+      }
+      this.replying = !this.replying;
+      this.newReply = "";
+    },
+    likeReply(i) {
+      this.$emit("likeReply", this.index, i);
+    },
+    dislikeReply(i) {
+      this.$emit("dislikeReply", this.index, i);
     },
   },
 };
@@ -80,7 +117,7 @@ export default {
 
 <style scoped>
 .comment {
-  @apply p-3 my-3 shadow-md border-2 border-gray-200 bg-white rounded-lg flex;
+  @apply p-3 my-3 shadow-md border-2 border-gray-200 bg-white rounded-lg;
 }
 
 .comment-left {
@@ -109,5 +146,13 @@ export default {
 
 .reply-button {
   @apply p-1 text-green-400 uppercase font-bold hover:text-green-500 transition-all;
+}
+
+.reply-text-area {
+  @apply w-full p-3 mb-2 border-2 shadow-md border-green-500 bg-white rounded-lg focus:outline-none focus:border-green-600 focus:bg-gray-50;
+}
+
+.new-reply-btn {
+  @apply p-2 pr-3 font-bold w-28 shadow-md bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg text-lg text-white;
 }
 </style>

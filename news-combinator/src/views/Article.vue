@@ -1,18 +1,21 @@
 <template>
   <ArticlePreview
-    v-bind:article="article"
-    v-bind:counters="counters"
-    v-bind:rating="rating"
-    v-bind:articleImg="articleImg"
-    v-on:like="like"
-    v-on:dislike="dislike"
+    :article="article"
+    :counters="counters"
+    :rating="rating"
+    :articleImg="articleImg"
+    @like="like"
+    @dislike="dislike"
   ></ArticlePreview>
   <CommentsFeed
-    v-bind:comments="article.comments"
-    v-bind:commentsCount="counters.comments"
-    v-on:newComment="addComment"
-    v-on:likeComment="likeComment"
-    v-on:dislikeComment="dislikeComment"
+    :comments="article.comments"
+    :commentsCount="counters.comments"
+    @newComment="addComment"
+    @likeComment="likeComment"
+    @dislikeComment="dislikeComment"
+    @addReply="addReply"
+    @likeReply="likeReply"
+    @dislikeReply="dislikeReply"
   ></CommentsFeed>
 </template>
 
@@ -113,6 +116,24 @@ export default {
     },
     dislikeComment(i) {
       this.article.comments[i].dislikes.push(1);
+    },
+    addReply(newReply, i) {
+      let reply = {
+        userID: "61cb6fccb9878383962a5e75",
+        username: "Tadej",
+        body: newReply.trim(),
+        createdAt: new Date(),
+        likes: [],
+        dislikes: [],
+      };
+      this.article.comments[i].replies.push(reply);
+      console.log(this.article.comments[i].replies);
+    },
+    likeReply(commentIndex, replyIndex) {
+      this.article.comments[commentIndex].replies[replyIndex].likes.push(1);
+    },
+    dislikeReply(commentIndex, replyIndex) {
+      this.article.comments[commentIndex].replies[replyIndex].dislikes.push(1);
     },
   },
   beforeMount() {

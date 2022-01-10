@@ -26,11 +26,11 @@
           <i class="far fa-comment details-icon"></i>
           <p class="detail-value">{{ counters.comments }}</p>
         </div>
-        <div class="likes" :class="rating" v-on:click="$emit('like')">
+        <div class="likes" :class="rating" @click="$emit('like')">
           <i class="far fa-thumbs-up details-icon"></i>
           <p class="detail-value">{{ counters.likes }}</p>
         </div>
-        <div class="dislikes" :class="rating" v-on:click="$emit('dislike')">
+        <div class="dislikes" :class="rating" @click="$emit('dislike')">
           <i class="far fa-thumbs-down details-icon"></i>
           <p class="detail-value">{{ counters.dislikes }}</p>
         </div>

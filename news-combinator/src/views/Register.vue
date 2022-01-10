@@ -10,7 +10,7 @@
         id="email"
         v-model="email"
         placeholder="primer@mail.com"
-        v-on:input="authenticateEmail"
+        @input="authenticateEmail"
       />
       <p class="error">{{ emailError }}</p>
     </div>
@@ -21,7 +21,7 @@
         type="text"
         id="username"
         v-model="username"
-        v-on:input="authenticateUsername"
+        @input="authenticateUsername"
       />
       <p class="error">{{ usernameError }}</p>
     </div>
@@ -32,7 +32,7 @@
         type="password"
         id="password"
         v-model="password"
-        v-on:input="authenticatePassword"
+        @input="authenticatePassword"
       />
       <p class="error" v-if="passwordError">{{ passwordError }}</p>
     </div>
@@ -43,7 +43,7 @@
         type="password"
         id="password-repeat"
         v-model="passwordRepeat"
-        v-on:input="authenticatePasswordRepeat"
+        @input="authenticatePasswordRepeat"
       />
       <p class="error">
         {{ passwordRepeatError }}
@@ -53,7 +53,7 @@
       <p class="error">{{ error }}</p>
       <button
         class="p-2 mx-2 w-36 rounded-sm bg-green-400 hover:bg-green-500 text-lg hover:text-white transition duration-300"
-        v-on:click="authenticateForm"
+        @click="authenticateForm"
       >
         Registriraj
       </button>

@@ -18,7 +18,7 @@
           ></textarea>
         </div>
       </div>
-      <button class="new-comment-btn" v-on:click="addComment">
+      <button class="new-comment-btn" @click="addComment">
         <i class="fas fa-paper-plane"></i>
         <span> Dodaj</span>
       </button>
@@ -26,11 +26,14 @@
     <div class="comments-container">
       <Comment
         v-for="(comment, index) in comments"
-        v-bind:comment="comment"
-        v-bind:index="index"
-        v-bind:key="comment.userID"
-        v-on:like="likeComment"
-        v-on:dislike="dislikeComment"
+        :comment="comment"
+        :index="index"
+        :key="comment.userID"
+        @like="likeComment"
+        @dislike="dislikeComment"
+        @addReply="addReply"
+        @likeReply="likeReply"
+        @dislikeReply="dislikeReply"
       ></Comment>
     </div>
   </div>
@@ -48,7 +51,14 @@ export default {
     comments: Array,
     commentsCount: Number,
   },
-  emits: ["newComment", "likeComment", "dislikeComment"],
+  emits: [
+    "newComment",
+    "likeComment",
+    "dislikeComment",
+    "addReply",
+    "likeReply",
+    "dislikeReply",
+  ],
   data: function () {
     return {
       newComment: "",
@@ -64,6 +74,15 @@ export default {
     },
     dislikeComment(i) {
       this.$emit("dislikeComment", i);
+    },
+    addReply(newReply, i) {
+      this.$emit("addReply", newReply, i);
+    },
+    likeReply(commentIndex, replyIndex) {
+      this.$emit("likeReply", commentIndex, replyIndex);
+    },
+    dislikeReply(commentIndex, replyIndex) {
+      this.$emit("dislikeReply", commentIndex, replyIndex);
     },
   },
 };
@@ -83,7 +102,7 @@ export default {
 }
 
 .new-comment-btn {
-  @apply p-2 pr-3 font-bold w-28 border-2 shadow-md border-green-500 bg-gray-50 hover:bg-gray-100 rounded-lg text-lg;
+  @apply p-2 pr-3 font-bold w-28 border-2 shadow-md border-green-500 bg-white hover:bg-gray-100 rounded-lg text-lg;
 }
 
 .comments-container {
