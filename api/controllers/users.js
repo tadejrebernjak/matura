@@ -33,14 +33,32 @@ exports.createUser = async function (req, res) {
 
     User.countDocuments({ email: user.email }, function (err, count) {
       if (count > 0) {
-        res.send("Account with this email already exists.");
+        res.status(400).send("Account with this email already exists.");
       } else {
         user.save();
-        res.send("Account successfully registered!");
+        res.status(201).send("Account successfully registered!");
       }
     });
   } catch (error) {
     console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+exports.authenticateUser = async function (req, res) {
+  const user = await User.findOne({ email: req.body.email });
+  if (user == null) {
+    return res.status(400).send();
+  }
+  try {
+    if (await bcrypt.compare(req.body.password, user.password)) {
+      res.status(200).send("Success");
+    } else {
+      res.status(400).send();
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send();
   }
 };
 

@@ -62,7 +62,7 @@ export default {
 
 <style scoped>
 .reply {
-  @apply p-3 my-3 shadow-md border border-l-8 border-emerald-300 bg-white rounded-md flex;
+  @apply p-3 my-3 border border-l-8 border-emerald-300 bg-white rounded-md flex;
 }
 
 .reply-left {

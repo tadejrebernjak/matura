@@ -117,7 +117,7 @@ export default {
 
 <style scoped>
 .comment {
-  @apply p-3 my-3 shadow-md border-2 border-gray-200 bg-white rounded-lg;
+  @apply p-3 my-3 shadow-md border-2 border-l-8 border-gray-200 bg-white rounded-lg;
 }
 
 .comment-left {
@@ -149,10 +149,10 @@ export default {
 }
 
 .reply-text-area {
-  @apply w-full p-3 mb-2 border-2 shadow-md border-green-500 bg-white rounded-lg focus:outline-none focus:border-green-600 focus:bg-gray-50;
+  @apply w-full p-3 mb-2 border-2 border-green-500 bg-white rounded-lg focus:outline-none focus:border-green-600 focus:bg-gray-50;
 }
 
 .new-reply-btn {
-  @apply p-2 pr-3 font-bold w-28 shadow-md bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg text-lg text-white;
+  @apply p-2 pr-3 font-bold w-28 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 rounded-lg text-lg text-white;
 }
 </style>

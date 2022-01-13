@@ -9,6 +9,8 @@ router.get("/:id", users_controller.getUserById);
 
 router.post("/create", users_controller.createUser);
 
+router.post("/login", users_controller.authenticateUser);
+
 router.delete("/:id/delete", users_controller.deleteUser);
 
 /*router.put('/:id/update', scraper_controller.product_update);

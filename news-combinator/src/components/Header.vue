@@ -14,7 +14,7 @@
         </router-link>
         <router-link to="/register">
           <button class="account-btn">
-            <i class="fas fa-user"></i> Registracija
+            <i class="fas fa-user-plus"></i> Registracija
           </button>
         </router-link>
       </div>
