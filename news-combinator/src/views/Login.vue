@@ -50,8 +50,9 @@
 
 <script>
 // @ is an alias to /src
+import { mapActions } from "vuex";
 import userService from "../userService";
-//import router from "../router";
+import router from "../router";
 
 export default {
   name: "Login",
@@ -65,12 +66,22 @@ export default {
     };
   },
   methods: {
+    ...mapActions({
+      saveToken: "auth/saveToken",
+    }),
+
     async loginCheck() {
       if (this.email != "" && this.password != "") {
-        this.loginResponse = await userService.authenticateUser(
+        const response = await userService.authenticateUser(
           this.email,
           this.password
         );
+        if (response.status !== 200) {
+          this.loginResponse = response.data;
+        } else {
+          await this.saveToken(response.data.accessToken);
+          router.push("/dashboard");
+        }
       }
     },
   },

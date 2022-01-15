@@ -6,13 +6,18 @@ class UserService {
   //Create User
   static async insertUser(email, username, password) {
     try {
-      return await axios.post(url + "/create", {
+      const response = await axios.post(url + "/create", {
         email,
         username,
         password,
       });
+      return response;
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 400) {
+        return "Račun s to E-Pošto že obstaja";
+      } else {
+        return "Napaka v strežniku";
+      }
     }
   }
 
@@ -22,13 +27,9 @@ class UserService {
         email,
         password,
       });
-      return response.data;
+      return response;
     } catch (error) {
-      if (error.response.status === 400) {
-        return "Nepravilna E-Pošta ali geslo";
-      } else {
-        return "Internal Server Error";
-      }
+      return error.response;
     }
   }
 }

@@ -7,6 +7,8 @@ router.get("/", users_controller.getUsers);
 
 router.get("/:id", users_controller.getUserById);
 
+router.post("/token", users_controller.authorizeToken);
+
 router.post("/create", users_controller.createUser);
 
 router.post("/login", users_controller.authenticateUser);

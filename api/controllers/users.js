@@ -1,6 +1,10 @@
 let User = require("../models/user");
 
+require("dotenv").config();
+
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { next } = require("cheerio/lib/api/traversing");
 
 exports.getUsers = async function (req, res) {
   try {
@@ -48,17 +52,29 @@ exports.createUser = async function (req, res) {
 exports.authenticateUser = async function (req, res) {
   const user = await User.findOne({ email: req.body.email });
   if (user == null) {
-    return res.status(400).send();
+    return res.status(400).send("Napačna E-Pošta ali geslo");
   }
   try {
     if (await bcrypt.compare(req.body.password, user.password)) {
-      res.status(200).send("Success");
+      const userTokenData = {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        pfp: user.pfp,
+      };
+
+      const accessToken = jwt.sign(
+        userTokenData,
+        process.env.ACCESS_TOKEN_SECRET
+      );
+
+      res.status(200).json({ accessToken: accessToken });
     } else {
-      res.status(400).send();
+      res.status(400).send("Napačna E-Pošta ali geslo");
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send();
+    res.status(500).send("Napaka v strežniku");
   }
 };
 
@@ -69,4 +85,38 @@ exports.deleteUser = async function (req, res) {
   } catch (error) {
     console.log(error);
   }
+};
+
+exports.authorizeToken = function (req, res) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, userTokenData) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+
+    res.status(200).send(userTokenData);
+  });
+};
+
+exports.authenticateToken = function (req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, userTokenData) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+
+    req.user = userTokenData;
+
+    next();
+  });
 };

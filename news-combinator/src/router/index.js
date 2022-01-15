@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
-//import article from "../../../api/models/article";
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Article from "../views/Article.vue";
+import Dashboard from "../views/Dashboard.vue";
 
 const routes = [
   {
@@ -15,11 +15,43 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem("token")) {
+        return next({
+          name: "Dashboard",
+        });
+      }
+
+      next();
+    },
   },
   {
     path: "/register",
     name: "Register",
     component: Register,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem("token")) {
+        return next({
+          name: "Dashboard",
+        });
+      }
+
+      next();
+    },
+  },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: Dashboard,
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem("token")) {
+        return next({
+          name: "Login",
+        });
+      }
+
+      next();
+    },
   },
   {
     path: "/article/:id",

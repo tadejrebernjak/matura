@@ -87,7 +87,7 @@
         </p>
       </div>
       <div class="form-control text-center">
-        <p class="error">{{ error }}</p>
+        <p class="error font-semibold">{{ error }}</p>
         <button
           class="p-3 mt-6 text-white rounded-sm bg-green-500 hover:bg-green-400 text-xl transition duration-200"
           :class="{ backgroundRed: formInvalid }"
@@ -120,6 +120,7 @@ export default {
       passwordRepeatError: "",
       formInvalid: false,
       registerTries: 0,
+      error: "",
     };
   },
   methods: {
@@ -194,12 +195,16 @@ export default {
       this.authenticateForm();
       if (this.formInvalid === false) {
         try {
-          await userService.insertUser(
+          const response = await userService.insertUser(
             this.email,
             this.username,
             this.password
           );
-          router.push("/login");
+          if (response.status === 201) {
+            router.push("/login");
+          } else {
+            this.error = response;
+          }
         } catch (error) {
           this.error = error.message;
         }

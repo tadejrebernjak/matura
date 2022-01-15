@@ -7,24 +7,56 @@
         <h1 class="text-4xl font-sans">Novice</h1>
       </router-link>
       <div class="flex content-center">
-        <router-link to="/login">
-          <button class="account-btn">
-            <i class="fas fa-sign-in-alt"></i> Prijava
+        <template v-if="!authenticated">
+          <router-link to="/login">
+            <button class="account-btn">
+              <i class="fas fa-sign-in-alt"></i> Prijava
+            </button>
+          </router-link>
+          <router-link to="/register">
+            <button class="account-btn">
+              <i class="fas fa-user-plus"></i> Registracija
+            </button>
+          </router-link>
+        </template>
+
+        <template v-else>
+          <router-link to="/dashboard">
+            <button class="account-btn">
+              <i class="fas fa-user"></i> {{ user.username }}
+            </button>
+          </router-link>
+          <button class="account-btn" @click="logout">
+            <i class="fas fa-sign-out-alt"></i> Odjava
           </button>
-        </router-link>
-        <router-link to="/register">
-          <button class="account-btn">
-            <i class="fas fa-user-plus"></i> Registracija
-          </button>
-        </router-link>
+        </template>
       </div>
     </div>
   </header>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+import router from "../router";
+
 export default {
   name: "Header",
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+      user: "auth/user",
+    }),
+  },
+  methods: {
+    ...mapActions({
+      logoutAction: "auth/logout",
+    }),
+
+    logout() {
+      this.logoutAction();
+      router.push("/");
+    },
+  },
 };
 </script>
 
