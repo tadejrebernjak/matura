@@ -1,6 +1,6 @@
 <template>
   <div
-    class="form max-w-lg border-2 border-green-500 mx-auto mt-10 shadow-lg rounded-md"
+    class="form max-w-lg border-2 border-green-500 mx-auto shadow-lg rounded-md"
   >
     <div class="bg-green-500 p-5 rounded-t-sm">
       <h1 class="text-3xl font-semibold text-center text-gray-50">

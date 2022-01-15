@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid md:grid-cols-3 sm:grid-cols-2 gap-4 grid-flow-row place-content-center my-10"
+    class="grid md:grid-cols-3 sm:grid-cols-2 gap-4 grid-flow-row place-content-center"
   >
     <div
       class="card"
