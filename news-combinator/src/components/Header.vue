@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-gray-100 border-b border-gray-400">
+  <header class="bg-gray-50 border-b border-gray-400">
     <div
       class="container max-w-4xl mx-auto p-6 flex flex-row justify-between flex-wrap content-center"
     >
@@ -9,7 +9,7 @@
       <div class="flex content-center">
         <template v-if="!authenticated">
           <router-link to="/login">
-            <button class="account-btn">
+            <button class="account-link">
               <i class="fas fa-sign-in-alt"></i> Prijava
             </button>
           </router-link>
@@ -22,7 +22,7 @@
 
         <template v-else>
           <router-link to="/dashboard">
-            <button class="account-btn">
+            <button class="account-link">
               <i class="fas fa-user"></i> {{ user.username }}
             </button>
           </router-link>
@@ -63,6 +63,10 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .account-btn {
-  @apply p-2 mx-2 w-36 rounded-sm bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-lg text-white transition duration-300;
+  @apply p-3 mx-2 rounded-lg bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-lg text-white transition duration-300;
+}
+
+.account-link {
+  @apply p-3 mx-2 text-green-500 hover:text-green-600 transition-all text-xl font-semibold;
 }
 </style>

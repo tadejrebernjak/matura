@@ -95,17 +95,15 @@ label {
 }
 
 .input-container {
-  @apply my-1 border-2 border-green-500 rounded-sm w-full;
+  @apply my-1 border-2 border-green-500 rounded-sm w-full flex;
 }
 
 .icon-container {
-  width: 10%;
-  @apply p-3 text-lg text-white bg-green-500 rounded-l-sm;
+  @apply p-2 px-3 text-lg text-white bg-green-500;
 }
 
 input {
-  width: 90%;
-  @apply focus:outline-none p-2 text-lg;
+  @apply focus:outline-none p-2 text-lg w-full;
 }
 
 .form-control {

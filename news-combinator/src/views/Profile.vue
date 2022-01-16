@@ -1,13 +1,19 @@
 <template>
+  <h1 class="text-3xl text-center">Urejanje profila</h1>
   <div
-    class="form max-w-lg border-2 border-green-500 mx-auto shadow-lg rounded-md"
+    class="my-10 border border-gray-400 rounded-md shadow-md flex flex-wrap overflow-hidden"
   >
-    <div class="bg-green-500 p-5 rounded-t-sm">
-      <h1 class="text-3xl font-semibold text-center text-gray-50">
-        Registracija
-      </h1>
+    <div
+      class="w-2/5 border-r border-gray-400 grid items-center justify-center"
+    >
+      <img
+        class="rounded-full object-cover w-64 h-64 border-2 border-gray-400"
+        :src="pfp"
+        ref="pfpPreview"
+        alt="Profilna slika"
+      />
     </div>
-    <div class="p-10 pt-3">
+    <div class="w-3/5">
       <div class="form-control">
         <label for="email">E-Pošta</label>
         <div class="input-container" :class="{ borderRed: emailError }">
@@ -44,86 +50,102 @@
         <p class="error">{{ usernameError }}</p>
       </div>
       <div class="form-control">
-        <label for="password">Geslo</label>
+        <label for="pfp">Profilna slika</label>
+        <div class="input-container" :class="{ borderRed: pfpError }">
+          <span class="icon-container" :class="{ backgroundRed: pfpError }">
+            <i class="fas fa-user-circle"></i>
+          </span>
+          <input
+            type="file"
+            id="pfp"
+            placeholder="Vpišite vaše uporabniško ime"
+            @change="authenticatePfp"
+          />
+        </div>
+        <p class="error">{{ pfpError }}</p>
+      </div>
+      <div class="form-control">
+        <label for="password">Ponovitev gesla</label>
         <div class="input-container" :class="{ borderRed: passwordError }">
           <span
             class="icon-container"
             :class="{ backgroundRed: passwordError }"
           >
-            <i class="fas fa-lock"></i>
+            <i class="fas fa-key"></i>
           </span>
           <input
             type="password"
             id="password"
             v-model="password"
-            placeholder="Vpišite geslo za vpis"
+            placeholder="Potrdite spremembe z geslom"
             @input="authenticatePassword"
           />
         </div>
-        <p class="error" v-if="passwordError">{{ passwordError }}</p>
-      </div>
-      <div class="form-control">
-        <label for="password-repeat">Ponovitev gesla</label>
-        <div
-          class="input-container"
-          :class="{ borderRed: passwordRepeatError }"
-        >
-          <span
-            class="icon-container"
-            :class="{ backgroundRed: passwordRepeatError }"
-          >
-            <i class="fas fa-key"></i>
-          </span>
-          <input
-            type="password"
-            id="password-repeat"
-            v-model="passwordRepeat"
-            placeholder="Potrdite geslo za vpis"
-            @input="authenticatePasswordRepeat"
-          />
-        </div>
         <p class="error">
-          {{ passwordRepeatError }}
+          {{ passwordError }}
         </p>
       </div>
-      <div class="form-control text-center">
-        <p class="error font-semibold">{{ error }}</p>
+      <div class="form-control">
         <button
-          class="p-3 mt-6 text-white rounded-sm bg-green-500 hover:bg-green-400 text-xl transition duration-200"
+          class="p-3 mt-6 mr-6 text-white rounded-sm bg-green-500 hover:bg-green-400 text-xl transition duration-200"
           :class="{ backgroundRed: formInvalid }"
-          @click="insertUser"
+          @click="updateUser"
         >
-          Registriraj račun
+          Shrani spremembe
         </button>
+        <router-link to="/dashboard">
+          <button
+            class="p-3 mt-6 text-white rounded-sm bg-green-500 hover:bg-green-400 text-xl transition duration-200"
+          >
+            Nazaj
+          </button>
+        </router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
+import { mapGetters } from "vuex";
 import userService from "../userService";
-import router from "../router";
+let defaultPfp = require("@/assets/default-pfp.jpg");
 
 export default {
-  name: "Register",
+  name: "Dashboard",
   components: {},
   data() {
     return {
-      email: "",
       username: "",
+      email: "",
       password: "",
-      passwordRepeat: "",
+      pfp: defaultPfp,
+      pfpFile: null,
+      pfpFileName: null,
       emailError: "",
       usernameError: "",
       passwordError: "",
-      passwordRepeatError: "",
-      formInvalid: false,
-      registerTries: 0,
-      error: "",
+      pfpError: "",
+      formInvalid: true,
     };
   },
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+      user: "auth/user",
+    }),
+  },
+  created() {
+    this.loadInfo();
+  },
   methods: {
+    loadInfo() {
+      this.$nextTick(function () {
+        this.username = this.user.username;
+        this.email = this.user.email;
+        this.pfp = this.user.pfp || defaultPfp;
+      });
+    },
+
     authenticateEmail() {
       if (
         // eslint-disable-next-line
@@ -162,46 +184,58 @@ export default {
       this.authenticateForm();
     },
 
-    authenticatePasswordRepeat() {
-      if (this.password != this.passwordRepeat) {
-        this.passwordRepeatError = "Gesla se ne ujemata";
-      } else {
-        this.passwordRepeatError = "";
-      }
-      this.authenticateForm();
-    },
-
-    authenticateForm() {
-      if (this.registerTries >= 1) {
-        if (
-          this.email != "" &&
-          this.username != "" &&
-          this.password != "" &&
-          this.passwordRepeat != "" &&
-          this.emailError === "" &&
-          this.usernameError === "" &&
-          this.passwordError === "" &&
-          this.passwordRepeatError === ""
-        ) {
-          this.formInvalid = false;
-        } else {
-          this.formInvalid = true;
+    authenticatePfp(event) {
+      const reg = /(\.jpg|\.jpeg|\.png)$/i;
+      const file = event.target.files[0];
+      const fileSize = Math.round(file.size / 1024);
+      let error = false;
+      if (file) {
+        if (!reg.exec(file.name)) {
+          this.pfpError = "Napačen tip datoteke. ";
+          error = true;
         }
+        if (fileSize > 2 * 1024) {
+          this.pfpError += "Slika ne sme biti večja od 2 MB.";
+          error = true;
+        }
+        if (error) {
+          this.pfp = defaultPfp;
+          this.pfpFile = null;
+          this.pfpFileName = null;
+          return;
+        }
+        this.pfp = URL.createObjectURL(file);
+        this.pfpFile = file;
+        this.pfpFileName = file.name;
+        this.pfpError = "";
       }
     },
-
-    async insertUser() {
-      this.registerTries++;
-      this.authenticateForm();
+    authenticateForm() {
+      if (
+        this.email != "" &&
+        this.username != "" &&
+        this.password != "" &&
+        this.emailError === "" &&
+        this.usernameError === "" &&
+        this.passwordError === ""
+      ) {
+        this.formInvalid = false;
+      } else {
+        this.formInvalid = true;
+      }
+    },
+    async updateUser() {
       if (this.formInvalid === false) {
         try {
-          const response = await userService.insertUser(
+          const response = await userService.updateUser(
             this.email,
             this.username,
+            this.pfpFile,
+            this.pfpFileName,
             this.password
           );
           if (response.status === 201) {
-            router.push("/login");
+            this.error = "nice";
           } else {
             this.error = response;
           }
@@ -221,11 +255,11 @@ label {
 }
 
 .input-container {
-  @apply my-1 border-2 border-green-500 rounded-sm w-full flex;
+  @apply my-1 border border-gray-400 rounded-sm w-full flex;
 }
 
 .icon-container {
-  @apply p-2 px-3 text-lg text-white bg-green-500;
+  @apply p-2 px-3 text-xl text-white bg-gray-400;
 }
 
 input {
@@ -233,7 +267,7 @@ input {
 }
 
 .form-control {
-  @apply my-4;
+  @apply mx-auto my-4 w-4/5;
 }
 
 .error {

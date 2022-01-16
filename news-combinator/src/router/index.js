@@ -4,6 +4,7 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Article from "../views/Article.vue";
 import Dashboard from "../views/Dashboard.vue";
+import Profile from "../views/Profile.vue";
 
 const routes = [
   {
@@ -21,7 +22,6 @@ const routes = [
           name: "Dashboard",
         });
       }
-
       next();
     },
   },
@@ -35,7 +35,6 @@ const routes = [
           name: "Dashboard",
         });
       }
-
       next();
     },
   },
@@ -49,7 +48,19 @@ const routes = [
           name: "Login",
         });
       }
-
+      next();
+    },
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem("token")) {
+        return next({
+          name: "Login",
+        });
+      }
       next();
     },
   },

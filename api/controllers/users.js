@@ -49,6 +49,8 @@ exports.createUser = async function (req, res) {
   }
 };
 
+exports.updateUser = async function (req, res) {};
+
 exports.authenticateUser = async function (req, res) {
   const user = await User.findOne({ email: req.body.email });
   if (user == null) {

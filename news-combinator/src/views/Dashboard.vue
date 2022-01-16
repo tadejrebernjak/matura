@@ -1,13 +1,15 @@
 <template>
-  <h1 class="font-semibold text-2xl border-b-2 border-gray-600 pb-4">
+  <h1 class="text-3xl border-b border-gray-600 pb-4">
     Pozdravljen/a, <span class="text-green-500">{{ user.username }}!</span>
   </h1>
 
   <div class="action-list">
-    <div class="action-card">
-      <i class="fas fa-user-circle"></i>
-      <h2>Urejanje profila</h2>
-    </div>
+    <router-link to="/profile">
+      <div class="action-card">
+        <i class="fas fa-user-circle"></i>
+        <h2>Urejanje profila</h2>
+      </div>
+    </router-link>
 
     <div class="action-card">
       <i class="fas fa-comments"></i>
@@ -60,7 +62,7 @@ export default {
 }
 
 .action-card {
-  @apply p-5 py-10 md:max-w-xs sm:max-w-lg text-center font-semibold text-2xl text-white hover:text-gray-200 bg-gradient-to-r from-green-400 to-green-500 border-2 border-green-600 rounded-md shadow-lg cursor-pointer transition-all duration-300;
+  @apply p-5 py-10 md:max-w-xs sm:max-w-lg text-center font-semibold text-2xl text-green-100 hover:text-white bg-gradient-to-r from-green-400 to-green-500 border-2 border-green-600 rounded-md shadow-lg cursor-pointer transition-all duration-300;
 }
 
 .action-card:hover {
