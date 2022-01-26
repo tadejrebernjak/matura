@@ -7,10 +7,10 @@
     <h1 class="text-3xl py-2 mt-2 font-bold text-white">
       {{ article.title }}
     </h1>
-    <p class="border-b border-gray-300 text-gray-300 pb-2">
+    <p class="text-lg border-b border-gray-100 text-gray-100 pb-2">
       {{ article.date }} • {{ article.time }}
     </p>
-    <p class="text-lg text-gray-100 py-2">{{ article.summary }}</p>
+    <p class="text-lg text-gray-50 py-2">{{ article.summary }}</p>
     <div class="actions">
       <div class="grid items-center">
         <a class="visit-btn" :href="article.url" target="_blank"
@@ -70,7 +70,7 @@ export default {
 }
 
 .visit-btn {
-  @apply text-white text-xl bg-gradient-to-br from-green-500 to-green-700 hover:from-green-400 hover:to-green-600 opacity-95 hover:opacity-100 p-3 rounded-sm;
+  @apply text-white text-xl bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 opacity-95 hover:opacity-100 p-3 rounded-sm;
 }
 
 .details {

@@ -6,7 +6,7 @@
         <img
           src="../assets/default-pfp.jpg"
           alt="Pfp"
-          class="inline w-14 h-14 rounded-full mr-3 shadow-md"
+          class="inline w-14 h-14 rounded-full mr-3"
         />
         <div class="w-full">
           <h2 class="text-left font-bold text-white text-xl mb-1">Tadej</h2>
@@ -98,11 +98,11 @@ export default {
 }
 
 .new-comment-textarea {
-  @apply w-full p-3 mb-2 border-2 shadow-md border-green-500 bg-white rounded-lg focus:outline-none focus:border-green-600 focus:bg-gray-50;
+  @apply w-full p-3 mb-2 border-2 border-green-500 bg-white rounded-lg focus:outline-none focus:border-green-600 focus:bg-gray-50;
 }
 
 .new-comment-btn {
-  @apply p-2 pr-3 font-bold w-28 border-2 shadow-md border-green-500 bg-white hover:bg-gray-100 rounded-lg text-lg;
+  @apply p-2 pr-3 font-bold w-28 border-2 border-green-500 bg-white hover:bg-gray-100 rounded-lg text-lg;
 }
 
 .comments-container {

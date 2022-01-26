@@ -4,13 +4,36 @@
     class="my-10 border border-gray-400 rounded-md shadow-md flex flex-wrap overflow-hidden"
   >
     <div
-      class="w-2/5 border-r border-gray-400 grid items-center justify-center"
+      class="w-2/5 border-r border-gray-400 grid items-center justify-center p-4"
     >
       <img
         class="rounded-full object-cover w-64 h-64 border-2 border-gray-400"
         :src="pfp"
         ref="pfpPreview"
         alt="Profilna slika"
+      />
+      <div class="mt-2 text-center">
+        <label
+          for="pfp"
+          class="p-3 mr-3 table-cell font-normal text-white rounded-sm bg-gray-500 hover:bg-gray-400 text-xl transition duration-200 w-max cursor-pointer"
+          style="display: inline-block"
+        >
+          Spremeni
+        </label>
+        <button
+          v-if="!pfpError && pfpFile"
+          class="p-3 inline m-auto text-white rounded-sm bg-green-500 hover:bg-green-400 text-xl transition duration-200 w-max cursor-pointer"
+          @click="uploadPfp"
+        >
+          Shrani
+        </button>
+      </div>
+      <p class="error">{{ pfpError }}</p>
+      <input
+        type="file"
+        id="pfp"
+        style="visibility: hidden; width: 0; height: 0"
+        @change="authenticatePfp"
       />
     </div>
     <div class="w-3/5">
@@ -50,21 +73,6 @@
         <p class="error">{{ usernameError }}</p>
       </div>
       <div class="form-control">
-        <label for="pfp">Profilna slika</label>
-        <div class="input-container" :class="{ borderRed: pfpError }">
-          <span class="icon-container" :class="{ backgroundRed: pfpError }">
-            <i class="fas fa-user-circle"></i>
-          </span>
-          <input
-            type="file"
-            id="pfp"
-            placeholder="Vpišite vaše uporabniško ime"
-            @change="authenticatePfp"
-          />
-        </div>
-        <p class="error">{{ pfpError }}</p>
-      </div>
-      <div class="form-control">
         <label for="password">Ponovitev gesla</label>
         <div class="input-container" :class="{ borderRed: passwordError }">
           <span
@@ -86,6 +94,9 @@
         </p>
       </div>
       <div class="form-control">
+        <p class="error">
+          {{ error }}
+        </p>
         <button
           class="p-3 mt-6 mr-6 text-white rounded-sm bg-green-500 hover:bg-green-400 text-xl transition duration-200"
           :class="{ backgroundRed: formInvalid }"
@@ -106,7 +117,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import userService from "../userService";
 let defaultPfp = require("@/assets/default-pfp.jpg");
 
@@ -126,6 +137,7 @@ export default {
       passwordError: "",
       pfpError: "",
       formInvalid: true,
+      error: "",
     };
   },
   computed: {
@@ -138,6 +150,10 @@ export default {
     this.loadInfo();
   },
   methods: {
+    ...mapActions({
+      saveToken: "auth/saveToken",
+    }),
+
     loadInfo() {
       this.$nextTick(function () {
         this.username = this.user.username;
@@ -184,32 +200,6 @@ export default {
       this.authenticateForm();
     },
 
-    authenticatePfp(event) {
-      const reg = /(\.jpg|\.jpeg|\.png)$/i;
-      const file = event.target.files[0];
-      const fileSize = Math.round(file.size / 1024);
-      let error = false;
-      if (file) {
-        if (!reg.exec(file.name)) {
-          this.pfpError = "Napačen tip datoteke. ";
-          error = true;
-        }
-        if (fileSize > 2 * 1024) {
-          this.pfpError += "Slika ne sme biti večja od 2 MB.";
-          error = true;
-        }
-        if (error) {
-          this.pfp = defaultPfp;
-          this.pfpFile = null;
-          this.pfpFileName = null;
-          return;
-        }
-        this.pfp = URL.createObjectURL(file);
-        this.pfpFile = file;
-        this.pfpFileName = file.name;
-        this.pfpError = "";
-      }
-    },
     authenticateForm() {
       if (
         this.email != "" &&
@@ -230,17 +220,58 @@ export default {
           const response = await userService.updateUser(
             this.email,
             this.username,
-            this.pfpFile,
-            this.pfpFileName,
             this.password
           );
-          if (response.status === 201) {
-            this.error = "nice";
+          if (response.status !== 200) {
+            this.error = response.data;
           } else {
-            this.error = response;
+            await this.saveToken(response.data.accessToken);
           }
         } catch (error) {
           this.error = error.message;
+        }
+      }
+    },
+
+    authenticatePfp(event) {
+      const reg = /(\.jpg|\.jpeg|\.png)$/i;
+      const file = event.target.files[0];
+      const fileSize = Math.round(file.size / 1024);
+      let error = false;
+      if (file) {
+        if (!reg.exec(file.name)) {
+          this.pfpError = "Napačen tip datoteke. ";
+          error = true;
+        }
+        if (fileSize > 2 * 1024) {
+          this.pfpError = "Slika ne sme biti večja od 2 MB.";
+          error = true;
+        }
+        if (error) {
+          this.pfp = this.user.pfp || defaultPfp;
+          this.pfpFile = null;
+          this.pfpFileName = null;
+          return;
+        }
+        this.pfp = URL.createObjectURL(file);
+        this.pfpFile = file;
+        this.pfpFileName = file.name;
+        this.pfpError = "";
+      }
+    },
+
+    async uploadPfp() {
+      if (this.pfp && this.pfpError == "") {
+        try {
+          const response = await userService.uploadPfp(
+            this.pfpFile,
+            this.pfpFileName
+          );
+          this.pfpFile = null;
+          this.pfpFileName = null;
+          await this.saveToken(response.data.accessToken);
+        } catch (error) {
+          this.pfpError = error;
         }
       }
     },

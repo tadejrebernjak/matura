@@ -18,7 +18,7 @@
             " ob " +
             comment.createdAt.getHours() +
             ":" +
-            comment.createdAt.getMinutes()
+            commentMinutes
           }}
         </p>
       </div>
@@ -89,12 +89,22 @@ export default {
   },
   data: function () {
     return {
+      commentMinutes: this.createdAtMinutes(),
       replying: false,
       newReply: "",
     };
   },
   emits: ["addReply", "likeReply", "dislikeReply"],
   methods: {
+    createdAtMinutes() {
+      let minutes = this.comment.createdAt.getMinutes();
+
+      if (minutes < 10) {
+        minutes = "0" + minutes;
+      }
+
+      return minutes;
+    },
     newReplyToggle() {
       this.replying = !this.replying;
     },
@@ -125,7 +135,7 @@ export default {
 }
 
 .comment-left img {
-  @apply w-14 rounded-full shadow-md;
+  @apply w-14 rounded-full border border-gray-400;
 }
 
 .comment-right {

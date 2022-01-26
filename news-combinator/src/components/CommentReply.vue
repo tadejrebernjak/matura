@@ -18,7 +18,7 @@
             " ob " +
             reply.createdAt.getHours() +
             ":" +
-            reply.createdAt.getMinutes()
+            replyMinutes
           }}
         </p>
       </div>
@@ -56,7 +56,23 @@ export default {
     index: Number,
     key: String,
   },
+  data: function () {
+    return {
+      replyMinutes: this.createdAtMinutes(),
+    };
+  },
   emits: ["like", "dislike"],
+  methods: {
+    createdAtMinutes() {
+      let minutes = this.reply.createdAt.getMinutes();
+
+      if (minutes < 10) {
+        minutes = "0" + minutes;
+      }
+
+      return minutes;
+    },
+  },
 };
 </script>
 
@@ -70,7 +86,7 @@ export default {
 }
 
 .reply-left img {
-  @apply w-14 rounded-full shadow-md;
+  @apply w-14 rounded-full border border-gray-400;
 }
 
 .reply-right {

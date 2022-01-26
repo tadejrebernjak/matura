@@ -5,6 +5,7 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { next } = require("cheerio/lib/api/traversing");
+const fs = require("fs");
 
 exports.getUsers = async function (req, res) {
   try {
@@ -49,7 +50,59 @@ exports.createUser = async function (req, res) {
   }
 };
 
-exports.updateUser = async function (req, res) {};
+exports.updateUser = async function (req, res) {
+  const update = {
+    email: req.body.email,
+    username: req.body.username,
+  };
+
+  try {
+    if (await bcrypt.compare(req.body.password, req.user.password)) {
+      try {
+        await User.findOneAndUpdate({ _id: req.user._id }, update);
+
+        const newUser = await User.findOne({ _id: req.user._id });
+        signToken(res, newUser);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send("Napaka v strežniku");
+      }
+    } else {
+      return res.status(400).send("Napačno geslo");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Napaka v strežniku");
+  }
+};
+
+exports.updatePfp = async function (req, res) {
+  try {
+    if (req.user.pfp) {
+      let pathSplit = req.user.pfp.split("/");
+      let fileDeletePath = "./" + pathSplit[3] + "/" + pathSplit[4];
+      fs.unlinkSync(fileDeletePath);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  const filePath = req.file.path.replace(/\\/g, "/");
+
+  const update = {
+    pfp: "http://localhost:5000/" + filePath,
+  };
+
+  try {
+    await User.findOneAndUpdate({ _id: req.user._id }, update);
+
+    const newUser = await User.findOne({ _id: req.user._id });
+    signToken(res, newUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Napaka v strežniku");
+  }
+};
 
 exports.authenticateUser = async function (req, res) {
   const user = await User.findOne({ email: req.body.email });
@@ -58,19 +111,7 @@ exports.authenticateUser = async function (req, res) {
   }
   try {
     if (await bcrypt.compare(req.body.password, user.password)) {
-      const userTokenData = {
-        _id: user._id,
-        email: user.email,
-        username: user.username,
-        pfp: user.pfp,
-      };
-
-      const accessToken = jwt.sign(
-        userTokenData,
-        process.env.ACCESS_TOKEN_SECRET
-      );
-
-      res.status(200).json({ accessToken: accessToken });
+      signToken(res, user);
     } else {
       res.status(400).send("Napačna E-Pošta ali geslo");
     }
@@ -112,13 +153,33 @@ exports.authenticateToken = function (req, res, next) {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, userTokenData) => {
-    if (err) {
-      return res.sendStatus(403);
+  jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET,
+    async (err, userTokenData) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+
+      try {
+        req.user = await User.findOne({ _id: userTokenData._id });
+      } catch (err) {
+        return res.sendStatus(403);
+      }
+      next();
     }
-
-    req.user = userTokenData;
-
-    next();
-  });
+  );
 };
+
+function signToken(res, user) {
+  const userTokenData = {
+    _id: user._id,
+    email: user.email,
+    username: user.username,
+    pfp: user.pfp,
+  };
+
+  const accessToken = jwt.sign(userTokenData, process.env.ACCESS_TOKEN_SECRET);
+
+  res.status(200).json({ accessToken: accessToken });
+}

@@ -21,8 +21,11 @@ const port = 5000;
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 
 app.use("/scraper", scraperRouter);
 app.use("/articles", articlesRouter);

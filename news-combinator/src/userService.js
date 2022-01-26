@@ -19,22 +19,32 @@ class UserService {
     }
   }
 
-  static async updateUser(email, username, pfpFile, pfpFileName, password) {
+  static async updateUser(email, username, password) {
     try {
-      const response = await api.post("users/create", {
+      const response = await api.put("users/update", {
         email,
         username,
-        pfpFile,
-        pfpFileName,
         password,
       });
       return response;
     } catch (error) {
-      if (error.response.status === 400) {
-        return "Račun s to E-Pošto že obstaja";
-      } else {
-        return "Napaka v strežniku";
-      }
+      return error.response;
+    }
+  }
+
+  static async uploadPfp(file, filename) {
+    const formData = new FormData();
+    formData.append("file", file, filename);
+
+    try {
+      const response = await api.post("users/pfp", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response;
+    } catch (error) {
+      return error.response;
     }
   }
 
