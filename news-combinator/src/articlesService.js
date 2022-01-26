@@ -9,7 +9,7 @@ class ArticlesService {
 
       return data;
     } catch (error) {
-      console.log(error);
+      return;
     }
   }
 
@@ -27,9 +27,30 @@ class ArticlesService {
 
   static async rateArticle(id, action) {
     try {
-      const response = await api.post("articles/" + id + "/rate", {
+      await api.post("articles/" + id + "/rate", {
         action: action,
       });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async addComment(id, comment) {
+    try {
+      const response = await api.post("articles/" + id + "/comments", {
+        comment: comment,
+      });
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static async deleteComment(articleID, commentID) {
+    try {
+      const response = await api.delete(
+        "articles/" + articleID + "/comments/" + commentID
+      );
       return response;
     } catch (error) {
       return error;

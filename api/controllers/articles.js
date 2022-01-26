@@ -1,4 +1,5 @@
-let Article = require("../models/article");
+let { Article, Comment } = require("../models/article");
+let User = require("../models/user");
 
 exports.getArticles = async function () {
   try {
@@ -11,10 +12,67 @@ exports.getArticles = async function () {
 
 exports.getArticleById = async function (req, res) {
   try {
-    let article = await Article.find({ _id: req.params.id });
-    res.send(article[0]);
+    let article = await Article.findOne({ _id: req.params.id }).lean().exec();
+
+    for (i = 0; i < article.comments.length; i++) {
+      let user = await User.findOne({ _id: article.comments[i].userID });
+
+      article.comments[i].user = {
+        username: user.username,
+        pfp: user.pfp || null,
+      };
+
+      //delete article.comments[i].userID;
+    }
+    res.send(article);
   } catch (error) {
     res.send(error);
+  }
+};
+
+exports.addArticleComment = async function (req, res) {
+  try {
+    /*const article = await Article.findOne({ _id: req.params.id });
+    for (i = 0; i < article.comments.length; i++) {
+      if (article.comments[i].userID.equals(req.user._id)) {
+        return res.status(400).send("User already commented");
+      }
+    }*/
+
+    const comment = new Comment({
+      userID: req.user._id,
+      body: req.body.comment,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      likes: [],
+      dislikes: [],
+      replies: [],
+    });
+
+    await Article.updateOne(
+      { _id: req.params.id },
+      { $push: { comments: comment } }
+    );
+
+    res.status(201).send("Comment created");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Something went wrong");
+  }
+};
+
+exports.deleteArticleComment = async function (req, res) {
+  try {
+    await Article.updateOne(
+      { _id: req.params.articleID },
+      {
+        $pull: { comments: { _id: req.params.commentID, userID: req.user.id } },
+      }
+    );
+    res.status(200).send("Deleted comment");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Something went wrong");
   }
 };
 
@@ -66,7 +124,7 @@ exports.rateArticle = async function (req, res) {
       default:
         break;
     }
-    res.status(200);
+    res.status(200).send("ok");
   } catch (error) {
     console.log(error);
   }

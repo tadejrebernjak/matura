@@ -1,10 +1,10 @@
 <template>
   <h1 class="mt-10 text-2xl font-bold">Komentarji ({{ commentsCount }})</h1>
   <div class="comments-feed">
-    <div class="new-comment-container">
+    <div class="new-comment-container" v-if="authenticated">
       <div class="flex">
         <img
-          src="../assets/default-pfp.jpg"
+          :src="user.pfp || pfp"
           alt="Pfp"
           class="inline w-14 h-14 rounded-full mr-3"
         />
@@ -29,6 +29,7 @@
         :comment="comment"
         :index="index"
         :key="comment.userID"
+        @deleteComment="deleteComment"
         @like="likeComment"
         @dislike="dislikeComment"
         @addReply="addReply"
@@ -40,6 +41,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+let defaultPfp = require("@/assets/default-pfp.jpg");
 import Comment from "../components/Comment";
 
 export default {
@@ -53,6 +56,7 @@ export default {
   },
   emits: [
     "newComment",
+    "deleteComment",
     "likeComment",
     "dislikeComment",
     "addReply",
@@ -62,12 +66,22 @@ export default {
   data: function () {
     return {
       newComment: "",
+      pfp: defaultPfp,
     };
+  },
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+      user: "auth/user",
+    }),
   },
   methods: {
     addComment() {
       this.$emit("newComment", this.newComment);
       this.newComment = "";
+    },
+    deleteComment(id) {
+      this.$emit("deleteComment", id);
     },
     likeComment(i) {
       this.$emit("likeComment", i);

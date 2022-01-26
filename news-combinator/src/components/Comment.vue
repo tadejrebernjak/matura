@@ -1,26 +1,25 @@
 <template>
   <div class="comment">
     <div class="comment-left">
-      <img src="../assets/default-pfp.jpg" alt="pfp" />
+      <img :src="comment.user.pfp || defaultPfp" alt="pfp" />
     </div>
     <div class="comment-right">
       <div class="comment-head">
-        <p class="text-lg font-bold text-green-500">
-          {{ comment.username }}
-        </p>
-        <p class="text-sm font-semibold text-gray-500">
-          {{
-            comment.createdAt.getDate() +
-            "." +
-            (comment.createdAt.getMonth() + 1) +
-            "." +
-            comment.createdAt.getFullYear() +
-            " ob " +
-            comment.createdAt.getHours() +
-            ":" +
-            commentMinutes
-          }}
-        </p>
+        <div>
+          <p class="text-lg font-bold text-green-500">
+            {{ comment.user.username }}
+          </p>
+          <p class="text-sm font-semibold text-gray-500">
+            {{ commentCreatedAt }}
+          </p>
+        </div>
+        <div
+          v-if="authenticated && user._id === comment.userID"
+          class="text-xl cursor-pointer hover:text-gray-600"
+          @click="$emit('deleteComment', comment._id)"
+        >
+          <i class="fas fa-trash-alt"></i>
+        </div>
       </div>
       <div class="comment-body">
         <p class="comment-text">{{ comment.body }}</p>
@@ -75,7 +74,12 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+let defaultPfp = require("@/assets/default-pfp.jpg");
 import CommentReply from "../components/CommentReply";
+import moment from "moment";
+import "moment/locale/sl";
+moment.locale("sl");
 
 export default {
   name: "Comment",
@@ -89,21 +93,25 @@ export default {
   },
   data: function () {
     return {
-      commentMinutes: this.createdAtMinutes(),
+      commentCreatedAt: this.createdAtString(),
       replying: false,
       newReply: "",
+      defaultPfp: defaultPfp,
     };
+  },
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+      user: "auth/user",
+    }),
   },
   emits: ["addReply", "likeReply", "dislikeReply"],
   methods: {
-    createdAtMinutes() {
-      let minutes = this.comment.createdAt.getMinutes();
+    createdAtString() {
+      const time = moment(this.comment.createdAt).fromNow();
+      const timeCapitalized = time.charAt(0).toUpperCase() + time.slice(1);
 
-      if (minutes < 10) {
-        minutes = "0" + minutes;
-      }
-
-      return minutes;
+      return timeCapitalized;
     },
     newReplyToggle() {
       this.replying = !this.replying;
@@ -143,7 +151,7 @@ export default {
 }
 
 .comment-head {
-  @apply mb-2 pb-2 border-b border-gray-300;
+  @apply mb-2 pb-2 border-b border-gray-300 flex justify-between align-middle;
 }
 
 .comment-text {

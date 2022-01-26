@@ -18,6 +18,18 @@ router.post(
   articles_controller.rateArticle
 );
 
+router.post(
+  "/:id/comments",
+  users_controller.authenticateToken,
+  articles_controller.addArticleComment
+);
+
+router.delete(
+  "/:articleID/comments/:commentID",
+  users_controller.authenticateToken,
+  articles_controller.deleteArticleComment
+);
+
 /*router.get('/:id', scraper_controller.product_details);
 
 router.put('/:id/update', scraper_controller.product_update);

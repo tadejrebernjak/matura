@@ -18,7 +18,6 @@ var CommentSchema = new mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
   },
-  username: String,
   body: String,
   createdAt: Date,
   updatedAt: Date,
@@ -43,7 +42,13 @@ var ArticleSchema = new mongoose.Schema({
   clicks: [],
 });
 
+const Comment = mongoose.model("Comment", CommentSchema);
+const Reply = mongoose.model("Reply", ReplySchema);
+const Article = mongoose.model("Article", ArticleSchema);
+
 // Export the model
-module.exports = mongoose.model("Comment", CommentSchema);
-module.exports = mongoose.model("Reply", ReplySchema);
-module.exports = mongoose.model("Article", ArticleSchema);
+module.exports = {
+  Comment: Comment,
+  Reply: Reply,
+  Article: Article,
+};

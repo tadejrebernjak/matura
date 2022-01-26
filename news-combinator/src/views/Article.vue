@@ -11,6 +11,7 @@
     :comments="article.comments"
     :commentsCount="counters.comments"
     @newComment="addComment"
+    @deleteComment="deleteComment"
     @likeComment="likeComment"
     @dislikeComment="dislikeComment"
     @addReply="addReply"
@@ -34,6 +35,7 @@ export default {
   data() {
     return {
       article: "",
+      comments: null,
       counters: {
         comments: 0,
         likes: 0,
@@ -61,6 +63,7 @@ export default {
         this.counters.likes = this.article.likes.length;
         this.counters.dislikes = this.article.dislikes.length;
         this.counters.clicks = this.article.clicks.length;
+
         if (this.article.likes.includes(this.user._id)) {
           this.rating = "liked";
         } else if (this.article.dislikes.includes(this.user._id)) {
@@ -88,11 +91,7 @@ export default {
           this.counters.likes++;
           break;
       }
-      const response = await ArticlesService.rateArticle(
-        this.article._id,
-        "like"
-      );
-      console.log(response);
+      await ArticlesService.rateArticle(this.article._id, "like");
     },
     async dislike() {
       switch (this.rating) {
@@ -110,31 +109,34 @@ export default {
           this.counters.likes--;
           break;
       }
-      const response = await ArticlesService.rateArticle(
-        this.article._id,
-        "dislike"
-      );
-      console.log(response);
+      await ArticlesService.rateArticle(this.article._id, "dislike");
     },
-    addComment(newComment) {
-      if (newComment != "") {
-        let comment = {
-          userID: "61cb6fccb9878383962a5e75",
-          username: "Tadej",
-          body: newComment.trim(),
-          createdAt: new Date(),
-          likes: [],
-          dislikes: [],
-          replies: [],
-        };
 
-        this.article.comments.push(comment);
-        this.counters.comments = this.article.comments.length;
+    async addComment(newComment) {
+      if (newComment != "") {
+        try {
+          const response = await ArticlesService.addComment(
+            this.article._id,
+            newComment
+          );
+          console.log(response);
+          this.getArticle(this.$route.params.id);
+        } catch (error) {
+          console.log(error);
+        }
       }
     },
-    addZero(time) {
-      if (time < 10) {
-        time = "0" + time;
+
+    async deleteComment(commentID) {
+      try {
+        const response = await ArticlesService.deleteComment(
+          this.article._id,
+          commentID
+        );
+        console.log(response);
+        this.getArticle(this.$route.params.id);
+      } catch (error) {
+        console.log(error);
       }
     },
     likeComment(i) {
