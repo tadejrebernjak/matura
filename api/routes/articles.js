@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var articles_controller = require("../controllers/articles");
+var users_controller = require("../controllers/users");
 
 router.get("/", async (req, res) => {
   let articles = await articles_controller.getArticles();
@@ -11,9 +12,13 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", articles_controller.getArticleById);
 
-/*router.post('/create', scraper_controller.product_create);
+router.post(
+  "/:id/rate",
+  users_controller.authenticateToken,
+  articles_controller.rateArticle
+);
 
-router.get('/:id', scraper_controller.product_details);
+/*router.get('/:id', scraper_controller.product_details);
 
 router.put('/:id/update', scraper_controller.product_update);
 

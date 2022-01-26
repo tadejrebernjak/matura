@@ -20,7 +20,7 @@
       <div class="details">
         <div class="visits">
           <i class="far fa-hand-pointer details-icon"></i>
-          <p class="detail-value">999</p>
+          <p class="detail-value">{{ counters.clicks }}</p>
         </div>
         <div class="comments">
           <i class="far fa-comment details-icon"></i>

@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import ArticlesService from "../articlesService";
 import ArticlePreview from "../components/ArticlePreview";
 import CommentsFeed from "../components/CommentsFeed";
@@ -37,12 +38,19 @@ export default {
         comments: 0,
         likes: 0,
         dislikes: 0,
+        clicks: 0,
       },
       articleImg: "",
       rating: "",
       newComment: "",
       error: "",
     };
+  },
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+      user: "auth/user",
+    }),
   },
   methods: {
     async getArticle(id) {
@@ -52,11 +60,19 @@ export default {
         this.counters.comments = this.article.comments.length;
         this.counters.likes = this.article.likes.length;
         this.counters.dislikes = this.article.dislikes.length;
+        this.counters.clicks = this.article.clicks.length;
+        if (this.article.likes.includes(this.user._id)) {
+          this.rating = "liked";
+        } else if (this.article.dislikes.includes(this.user._id)) {
+          this.rating = "disliked";
+        } else {
+          this.rating = "";
+        }
       } catch (error) {
         this.error = error.message;
       }
     },
-    like() {
+    async like() {
       switch (this.rating) {
         case "":
           this.rating = "liked";
@@ -72,8 +88,13 @@ export default {
           this.counters.likes++;
           break;
       }
+      const response = await ArticlesService.rateArticle(
+        this.article._id,
+        "like"
+      );
+      console.log(response);
     },
-    dislike() {
+    async dislike() {
       switch (this.rating) {
         case "":
           this.rating = "disliked";
@@ -89,6 +110,11 @@ export default {
           this.counters.likes--;
           break;
       }
+      const response = await ArticlesService.rateArticle(
+        this.article._id,
+        "dislike"
+      );
+      console.log(response);
     },
     addComment(newComment) {
       if (newComment != "") {

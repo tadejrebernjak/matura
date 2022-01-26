@@ -40,6 +40,7 @@ var ArticleSchema = new mongoose.Schema({
   comments: [CommentSchema],
   likes: [],
   dislikes: [],
+  clicks: [],
 });
 
 // Export the model
