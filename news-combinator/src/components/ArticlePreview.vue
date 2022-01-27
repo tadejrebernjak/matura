@@ -13,7 +13,11 @@
     <p class="text-lg text-gray-50 py-2">{{ article.summary }}</p>
     <div class="actions">
       <div class="grid items-center">
-        <a class="visit-btn" :href="article.url" target="_blank"
+        <a
+          class="visit-btn"
+          :href="article.url"
+          target="_blank"
+          @click="$emit('visit')"
           >Obišči članek</a
         >
       </div>
@@ -23,8 +27,10 @@
           <p class="detail-value">{{ counters.clicks }}</p>
         </div>
         <div class="comments">
-          <i class="far fa-comment details-icon"></i>
-          <p class="detail-value">{{ counters.comments }}</p>
+          <a href="#commentsFeed">
+            <i class="far fa-comment details-icon"></i>
+            <p class="detail-value">{{ counters.comments }}</p>
+          </a>
         </div>
         <div class="likes" :class="rating" @click="$emit('like')">
           <i class="far fa-thumbs-up details-icon"></i>

@@ -1,5 +1,7 @@
 <template>
-  <h1 class="mt-10 text-2xl font-bold">Komentarji ({{ commentsCount }})</h1>
+  <h1 class="mt-10 text-2xl font-bold" id="commentsFeed">
+    Komentarji ({{ commentsCount }})
+  </h1>
   <div class="comments-feed">
     <div class="new-comment-container" v-if="authenticated">
       <div class="flex">
@@ -9,7 +11,9 @@
           class="inline w-14 h-14 rounded-full mr-3"
         />
         <div class="w-full">
-          <h2 class="text-left font-bold text-white text-xl mb-1">Tadej</h2>
+          <h2 class="text-left font-bold text-white text-xl mb-1">
+            {{ user.username }}
+          </h2>
           <textarea
             class="new-comment-textarea"
             rows="4"
@@ -30,9 +34,12 @@
         :index="index"
         :key="comment.userID"
         @deleteComment="deleteComment"
-        @like="likeComment"
-        @dislike="dislikeComment"
+        @likeComment="likeComment"
+        @dislikeComment="dislikeComment"
         @addReply="addReply"
+        @editReply="editReply"
+        @deleteReply="deleteReply"
+        @editComment="editComment"
         @likeReply="likeReply"
         @dislikeReply="dislikeReply"
       ></Comment>
@@ -56,10 +63,13 @@ export default {
   },
   emits: [
     "newComment",
+    "editComment",
     "deleteComment",
     "likeComment",
     "dislikeComment",
     "addReply",
+    "editReply",
+    "deleteReply",
     "likeReply",
     "dislikeReply",
   ],
@@ -80,23 +90,32 @@ export default {
       this.$emit("newComment", this.newComment);
       this.newComment = "";
     },
+    editComment(editBody, commentID) {
+      this.$emit("editComment", editBody, commentID);
+    },
     deleteComment(id) {
       this.$emit("deleteComment", id);
     },
-    likeComment(i) {
-      this.$emit("likeComment", i);
+    likeComment(commentID) {
+      this.$emit("likeComment", commentID);
     },
-    dislikeComment(i) {
-      this.$emit("dislikeComment", i);
+    dislikeComment(commentID) {
+      this.$emit("dislikeComment", commentID);
     },
-    addReply(newReply, i) {
-      this.$emit("addReply", newReply, i);
+    addReply(newReply, commentID) {
+      this.$emit("addReply", newReply, commentID);
     },
-    likeReply(commentIndex, replyIndex) {
-      this.$emit("likeReply", commentIndex, replyIndex);
+    editReply(replyID, commentID, editBody) {
+      this.$emit("editReply", replyID, commentID, editBody);
     },
-    dislikeReply(commentIndex, replyIndex) {
-      this.$emit("dislikeReply", commentIndex, replyIndex);
+    deleteReply(commentID, replyID) {
+      this.$emit("deleteReply", commentID, replyID);
+    },
+    likeReply(commentID, replyID) {
+      this.$emit("likeReply", commentID, replyID);
+    },
+    dislikeReply(commentID, replyID) {
+      this.$emit("dislikeReply", commentID, replyID);
     },
   },
 };

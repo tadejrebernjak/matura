@@ -11,6 +11,7 @@
           </p>
           <p class="text-sm font-semibold text-gray-500">
             {{ commentCreatedAt }}
+            <span v-if="isEdited"> (urejen)</span>
           </p>
         </div>
         <div
@@ -24,32 +25,46 @@
       <div class="comment-body">
         <p class="comment-text">{{ comment.body }}</p>
       </div>
-      <div class="comment-foot">
-        <div class="flex items-center justify-center">
+      <div
+        class="comment-foot justify-end"
+        :class="{
+          'justify-between': authenticated,
+        }"
+      >
+        <div
+          class="flex items-center justify-center"
+          v-if="authenticated && user._id !== comment.userID"
+        >
           <button class="reply-button" @click="newReplyToggle">
             <span v-if="!replying"><i class="fas fa-reply"></i> Odgovori</span>
-            <span v-else><i class="fas fa-window-close"></i> Skrij</span>
+            <span v-else><i class="fas fa-window-close"></i> Prekliči</span>
           </button>
         </div>
+
+        <div
+          class="flex items-center justify-center"
+          v-if="authenticated && user._id === comment.userID"
+        >
+          <button class="reply-button" @click="editToggle">
+            <span v-if="!editing"><i class="fas fa-edit"></i> Uredi</span>
+            <span v-else><i class="fas fa-window-close"></i> Prekliči</span>
+          </button>
+        </div>
+
         <div
           class="grid grid-cols-2 space-x-3 text-lg mr-2 font-bold text-gray-600"
         >
-          <div
-            class="text-center hover:text-gray-500 cursor-pointer transition-all duration-300"
-            @click="$emit('like', index)"
-          >
+          <div class="like-button" :class="rating" @click="likeComment">
             <i class="fas fa-thumbs-up text-2xl"></i>
             <p>{{ comment.likes.length }}</p>
           </div>
-          <div
-            class="text-center hover:text-gray-500 cursor-pointer transition-all duration-300"
-            @click="$emit('dislike', index)"
-          >
+          <div class="dislike-button" :class="rating" @click="dislikeComment">
             <i class="fas fa-thumbs-down text-2xl"></i>
             <p>{{ comment.dislikes.length }}</p>
           </div>
         </div>
       </div>
+
       <div class="reply" v-if="replying">
         <textarea
           class="reply-text-area"
@@ -59,14 +74,27 @@
         ></textarea>
         <button class="new-reply-btn" @click="addReply">Odgovori</button>
       </div>
+
+      <div class="edit" v-if="editing">
+        <textarea
+          class="edit-text-area"
+          v-model="editBody"
+          rows="4"
+          placeholder="Uredite vaš zgornji komentar"
+        ></textarea>
+        <button class="edit-btn" @click="editComment">Uredi</button>
+      </div>
+
       <div class="replies">
         <CommentReply
           v-for="(reply, index) in comment.replies"
           :reply="reply"
           :index="index"
           :key="reply.userID"
-          @like="likeReply"
-          @dislike="dislikeReply"
+          @deleteReply="deleteReply"
+          @editReply="editReply"
+          @likeReply="likeReply"
+          @dislikeReply="dislikeReply"
         ></CommentReply>
       </div>
     </div>
@@ -94,8 +122,12 @@ export default {
   data: function () {
     return {
       commentCreatedAt: this.createdAtString(),
+      isEdited: this.isEditedCheck(),
       replying: false,
+      editing: false,
+      rating: "",
       newReply: "",
+      editBody: this.comment.body,
       defaultPfp: defaultPfp,
     };
   },
@@ -105,30 +137,103 @@ export default {
       user: "auth/user",
     }),
   },
-  emits: ["addReply", "likeReply", "dislikeReply"],
+  emits: [
+    "addReply",
+    "editComment",
+    "likeComment",
+    "dislikeComment",
+    "deleteReply",
+    "editReply",
+    "likeReply",
+    "dislikeReply",
+  ],
+  updated() {
+    this.isEdited = this.isEditedCheck();
+  },
   methods: {
+    checkRating() {
+      if (this.comment.likes.includes(this.user._id)) {
+        return "liked";
+      } else if (this.comment.dislikes.includes(this.user._id)) {
+        return "disliked";
+      } else {
+        return "";
+      }
+    },
     createdAtString() {
       const time = moment(this.comment.createdAt).fromNow();
       const timeCapitalized = time.charAt(0).toUpperCase() + time.slice(1);
 
       return timeCapitalized;
     },
+    isEditedCheck() {
+      if (this.comment.createdAt !== this.comment.updatedAt) return true;
+      else return false;
+    },
     newReplyToggle() {
       this.replying = !this.replying;
     },
+    editToggle() {
+      this.editing = !this.editing;
+    },
+    editComment() {
+      this.$emit("editComment", this.editBody, this.comment._id);
+      this.editing = false;
+    },
+    likeComment() {
+      if (this.authenticated) {
+        switch (this.rating) {
+          case "":
+            this.rating = "liked";
+            break;
+          case "liked":
+            this.rating = "";
+            break;
+          case "disliked":
+            this.rating = "liked";
+            break;
+        }
+        this.$emit("likeComment", this.comment._id);
+      }
+    },
+    dislikeComment() {
+      if (this.authenticated) {
+        switch (this.rating) {
+          case "":
+            this.rating = "disliked";
+            break;
+          case "disliked":
+            this.rating = "";
+            break;
+          case "liked":
+            this.rating = "disliked";
+            break;
+        }
+        this.$emit("dislikeComment", this.comment._id);
+      }
+    },
     addReply() {
       if (this.newReply.trim() != "") {
-        this.$emit("addReply", this.newReply, this.index);
+        this.$emit("addReply", this.newReply.trim(), this.comment._id);
       }
       this.replying = !this.replying;
       this.newReply = "";
     },
-    likeReply(i) {
-      this.$emit("likeReply", this.index, i);
+    editReply(replyID, editBody) {
+      this.$emit("editReply", this.comment._id, replyID, editBody);
     },
-    dislikeReply(i) {
-      this.$emit("dislikeReply", this.index, i);
+    deleteReply(replyID) {
+      this.$emit("deleteReply", this.comment._id, replyID);
     },
+    likeReply(replyID) {
+      this.$emit("likeReply", this.comment._id, replyID);
+    },
+    dislikeReply(replyID) {
+      this.$emit("dislikeReply", this.comment._id, replyID);
+    },
+  },
+  mounted() {
+    this.rating = this.checkRating();
   },
 };
 </script>
@@ -159,18 +264,33 @@ export default {
 }
 
 .comment-foot {
-  @apply my-2 flex justify-between;
+  @apply my-2 flex;
+}
+
+.like-button,
+.dislike-button {
+  @apply text-center hover:text-gray-500 cursor-pointer transition-all duration-300;
+}
+
+.like-button.liked {
+  @apply text-green-400 hover:text-green-500;
+}
+
+.dislike-button.disliked {
+  @apply text-red-500 hover:text-red-600;
 }
 
 .reply-button {
   @apply p-1 text-green-400 uppercase font-bold hover:text-green-500 transition-all;
 }
 
-.reply-text-area {
+.reply-text-area,
+.edit-text-area {
   @apply w-full p-3 mb-2 border-2 border-green-500 bg-white rounded-lg focus:outline-none focus:border-green-600 focus:bg-gray-50;
 }
 
-.new-reply-btn {
-  @apply p-2 pr-3 font-bold w-28 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 rounded-lg text-lg text-white;
+.new-reply-btn,
+.edit-btn {
+  @apply p-2 font-bold w-28 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 rounded-lg text-white;
 }
 </style>

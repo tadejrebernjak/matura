@@ -25,11 +25,32 @@ class ArticlesService {
     }
   }
 
+  static async visitArticle(id) {
+    try {
+      await api.post("articles/" + id + "/visit");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   static async rateArticle(id, action) {
     try {
       await api.post("articles/" + id + "/rate", {
         action: action,
       });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async rateComment(articleID, commentID, action) {
+    try {
+      await api.post(
+        "articles/" + articleID + "/comments/" + commentID + "/rate",
+        {
+          action: action,
+        }
+      );
     } catch (error) {
       console.log(error);
     }
@@ -46,6 +67,69 @@ class ArticlesService {
     }
   }
 
+  static async addReply(articleID, commentID, newReply) {
+    try {
+      const response = await api.post(
+        "articles/" + articleID + "/comments/" + commentID + "/replies",
+        {
+          reply: newReply,
+        }
+      );
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static async editCommentReply(articleID, commentID, replyID, editBody) {
+    try {
+      const response = await api.put(
+        "articles/" +
+          articleID +
+          "/comments/" +
+          commentID +
+          "/replies/" +
+          replyID,
+        {
+          newReply: editBody,
+        }
+      );
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static async deleteCommentReply(articleID, commentID, replyID) {
+    try {
+      const response = await api.delete(
+        "articles/" +
+          articleID +
+          "/comments/" +
+          commentID +
+          "/replies/" +
+          replyID
+      );
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static async editComment(articleID, commentID, editBody) {
+    try {
+      const response = await api.put(
+        "articles/" + articleID + "/comments/" + commentID,
+        {
+          newComment: editBody,
+        }
+      );
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
   static async deleteComment(articleID, commentID) {
     try {
       const response = await api.delete(
@@ -54,6 +138,25 @@ class ArticlesService {
       return response;
     } catch (error) {
       return error;
+    }
+  }
+
+  static async rateCommentReply(articleID, commentID, replyID, action) {
+    try {
+      await api.post(
+        "articles/" +
+          articleID +
+          "/comments/" +
+          commentID +
+          "/replies/" +
+          replyID +
+          "/rate",
+        {
+          action: action,
+        }
+      );
+    } catch (error) {
+      console.log(error);
     }
   }
 }

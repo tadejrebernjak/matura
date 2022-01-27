@@ -1,4 +1,4 @@
-let { Article, Comment } = require("../models/article");
+let { Article, Comment, Reply } = require("../models/article");
 let User = require("../models/user");
 
 exports.getArticles = async function () {
@@ -14,6 +14,7 @@ exports.getArticleById = async function (req, res) {
   try {
     let article = await Article.findOne({ _id: req.params.id }).lean().exec();
 
+    // Adds user information to comments
     for (i = 0; i < article.comments.length; i++) {
       let user = await User.findOne({ _id: article.comments[i].userID });
 
@@ -22,7 +23,17 @@ exports.getArticleById = async function (req, res) {
         pfp: user.pfp || null,
       };
 
-      //delete article.comments[i].userID;
+      // Adds user information to replies
+      for (y = 0; y < article.comments[i].replies.length; y++) {
+        let user2 = await User.findOne({
+          _id: article.comments[i].replies[y].userID,
+        });
+
+        article.comments[i].replies[y].user = {
+          username: user2.username,
+          pfp: user2.pfp || null,
+        };
+      }
     }
     res.send(article);
   } catch (error) {
@@ -30,46 +41,18 @@ exports.getArticleById = async function (req, res) {
   }
 };
 
-exports.addArticleComment = async function (req, res) {
+exports.visitArticle = async function (req, res) {
   try {
-    /*const article = await Article.findOne({ _id: req.params.id });
-    for (i = 0; i < article.comments.length; i++) {
-      if (article.comments[i].userID.equals(req.user._id)) {
-        return res.status(400).send("User already commented");
-      }
-    }*/
-
-    const comment = new Comment({
-      userID: req.user._id,
-      body: req.body.comment,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      likes: [],
-      dislikes: [],
-      replies: [],
-    });
-
-    await Article.updateOne(
-      { _id: req.params.id },
-      { $push: { comments: comment } }
-    );
-
-    res.status(201).send("Comment created");
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Something went wrong");
-  }
-};
-
-exports.deleteArticleComment = async function (req, res) {
-  try {
-    await Article.updateOne(
-      { _id: req.params.articleID },
-      {
-        $pull: { comments: { _id: req.params.commentID, userID: req.user.id } },
-      }
-    );
-    res.status(200).send("Deleted comment");
+    const article = await Article.findOne({ _id: req.params.id });
+    if (!article.clicks.includes(req.user._id)) {
+      await Article.updateOne(
+        { _id: req.params.id },
+        { $push: { clicks: req.user._id } }
+      );
+      res.status(200).send("Added visit");
+    } else {
+      res.status(200).send("Already visited");
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send("Something went wrong");
@@ -127,6 +110,7 @@ exports.rateArticle = async function (req, res) {
     res.status(200).send("ok");
   } catch (error) {
     console.log(error);
+    res.status(500).send("Something went wrong");
   }
 };
 
