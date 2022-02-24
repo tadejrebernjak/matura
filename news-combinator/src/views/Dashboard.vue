@@ -11,15 +11,19 @@
       </div>
     </router-link>
 
-    <div class="action-card">
-      <i class="fas fa-comments"></i>
-      <h2>Vaši komentarji</h2>
-    </div>
+    <router-link to="/comments">
+      <div class="action-card">
+        <i class="fas fa-comments"></i>
+        <h2>Vaši komentarji</h2>
+      </div>
+    </router-link>
 
-    <div class="action-card">
-      <i class="fas fa-clock"></i>
-      <h2>Nedavno prebrano</h2>
-    </div>
+    <router-link to="/read">
+      <div class="action-card">
+        <i class="fas fa-clock"></i>
+        <h2>Nedavno prebrano</h2>
+      </div>
+    </router-link>
 
     <div class="action-card">
       <i class="fas fa-thumbs-up"></i>

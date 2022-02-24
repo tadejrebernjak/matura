@@ -5,6 +5,7 @@ import Register from "../views/Register.vue";
 import Article from "../views/Article.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Profile from "../views/Profile.vue";
+import Read from "../views/Read.vue";
 
 const routes = [
   {
@@ -55,6 +56,19 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: Profile,
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem("token")) {
+        return next({
+          name: "Login",
+        });
+      }
+      next();
+    },
+  },
+  {
+    path: "/read",
+    name: "Read",
+    component: Read,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("token")) {
         return next({

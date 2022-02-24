@@ -26,6 +26,14 @@ var CommentSchema = new mongoose.Schema({
   replies: [ReplySchema],
 });
 
+var EntrySchema = new mongoose.Schema({
+  userID: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "User",
+  },
+  createdAt: Date,
+});
+
 var ArticleSchema = new mongoose.Schema({
   source: String,
   url: { type: String, unique: true },
@@ -37,18 +45,22 @@ var ArticleSchema = new mongoose.Schema({
   category: String,
   image: String,
   comments: [CommentSchema],
-  likes: [],
-  dislikes: [],
-  clicks: [],
+  likes: [EntrySchema],
+  dislikes: [EntrySchema],
+  clicks: [EntrySchema],
 });
 
 const Comment = mongoose.model("Comment", CommentSchema);
 const Reply = mongoose.model("Reply", ReplySchema);
+const Visit = mongoose.model("Visit", EntrySchema);
+const Rating = mongoose.model("Rating", EntrySchema);
 const Article = mongoose.model("Article", ArticleSchema);
 
 // Export the model
 module.exports = {
   Comment: Comment,
   Reply: Reply,
+  Visit: Visit,
+  Rating: Rating,
   Article: Article,
 };

@@ -1,10 +1,21 @@
-let { Article, Comment, Reply } = require("../models/article");
+let { Article, Rating, Visit } = require("../models/article");
 let User = require("../models/user");
 
-exports.getArticles = async function () {
+exports.getArticles = async function (req, res) {
   try {
     let articles = await Article.find({}).sort({ timestamp: -1 }).limit(30);
-    return articles;
+    res.send(articles);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getReadArticles = async function (req, res) {
+  try {
+    let articles = await Article.find({
+      "clicks.userID": req.user._id,
+    });
+    res.send(articles);
   } catch (error) {
     console.log(error);
   }
@@ -44,10 +55,20 @@ exports.getArticleById = async function (req, res) {
 exports.visitArticle = async function (req, res) {
   try {
     const article = await Article.findOne({ _id: req.params.id });
-    if (!article.clicks.includes(req.user._id)) {
+
+    const click = new Visit({
+      userID: req.user._id,
+      createdAt: Date.now(),
+    });
+
+    if (
+      !article.clicks.some(function (click) {
+        return click.userID.equals(req.user._id);
+      })
+    ) {
       await Article.updateOne(
         { _id: req.params.id },
-        { $push: { clicks: req.user._id } }
+        { $push: { clicks: click } }
       );
       res.status(200).send("Added visit");
     } else {
@@ -64,8 +85,12 @@ exports.rateArticle = async function (req, res) {
     const article = await Article.findOne({ _id: req.params.id });
     let state;
 
-    const liked = article.likes.includes(req.user._id);
-    const disliked = article.dislikes.includes(req.user._id);
+    const liked = article.likes.some(function (like) {
+      return like.userID.equals(req.user._id);
+    });
+    const disliked = article.dislikes.some(function (dislike) {
+      return dislike.userID.equals(req.user._id);
+    });
 
     if (liked) state = "liked";
     else if (disliked) state = "disliked";
@@ -115,23 +140,34 @@ exports.rateArticle = async function (req, res) {
 };
 
 async function likeArticle(articleID, userID) {
-  await Article.updateOne({ _id: articleID }, { $push: { likes: userID } });
+  const like = new Rating({
+    userID: userID,
+    createdAt: Date.now(),
+  });
+  await Article.updateOne({ _id: articleID }, { $push: { likes: like } });
 }
 
 async function unlikeArticle(articleID, userID) {
   await Article.updateOne(
     { _id: articleID },
-    { $pullAll: { likes: [userID] } }
+    { $pull: { likes: { userID: userID } } },
+    { new: true }
   );
 }
 
 async function dislikeArticle(articleID, userID) {
-  await Article.updateOne({ _id: articleID }, { $push: { dislikes: userID } });
+  const dislike = new Rating({
+    userID: userID,
+    createdAt: Date.now(),
+  });
+
+  await Article.updateOne({ _id: articleID }, { $push: { dislikes: dislike } });
 }
 
 async function undislikeArticle(articleID, userID) {
   await Article.updateOne(
     { _id: articleID },
-    { $pullAll: { dislikes: [userID] } }
+    { $pull: { dislikes: { userID: userID } } },
+    { new: true }
   );
 }

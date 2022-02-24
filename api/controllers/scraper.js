@@ -1,4 +1,4 @@
-let Article = require("../models/article");
+let { Article } = require("../models/article");
 
 const axios = require("axios");
 const cheerio = require("cheerio");

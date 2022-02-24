@@ -8,11 +8,13 @@ var users_controller = require("../controllers/users");
 
 // ARTICLES
 
-router.get("/", async (req, res) => {
-  let articles = await articles_controller.getArticles();
+router.get("/", articles_controller.getArticles);
 
-  res.send(articles);
-});
+router.get(
+  "/read",
+  users_controller.authenticateToken,
+  articles_controller.getReadArticles
+);
 
 router.get("/:id", articles_controller.getArticleById);
 

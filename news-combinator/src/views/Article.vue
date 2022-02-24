@@ -69,9 +69,11 @@ export default {
         this.counters.dislikes = this.article.dislikes.length;
         this.counters.clicks = this.article.clicks.length;
 
-        if (this.article.likes.includes(this.user._id)) {
+        if (this.article.likes.some((e) => e.userID == this.user._id)) {
           this.rating = "liked";
-        } else if (this.article.dislikes.includes(this.user._id)) {
+        } else if (
+          this.article.dislikes.some((e) => e.userID == this.user._id)
+        ) {
           this.rating = "disliked";
         } else {
           this.rating = "";
@@ -81,7 +83,10 @@ export default {
       }
     },
     async visit() {
-      if (this.authenticated && !this.article.clicks.includes(this.user._id)) {
+      if (
+        this.authenticated &&
+        !this.article.clicks.some((e) => e.userID == this.user._id)
+      ) {
         try {
           await ArticlesService.visitArticle(this.article._id);
           this.counters.clicks++;

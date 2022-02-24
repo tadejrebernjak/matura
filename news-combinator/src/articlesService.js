@@ -13,6 +13,18 @@ class ArticlesService {
     }
   }
 
+  // Articles that the user visited
+  static async getReadArticles() {
+    try {
+      const response = await api.get("articles/read");
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      return;
+    }
+  }
+
   // Article details
   static async getArticleById(id) {
     try {

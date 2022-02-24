@@ -66,7 +66,7 @@ export default {
 }
 
 .card-body {
-  @apply p-1;
+  @apply p-2;
 }
 
 .card-image {
