@@ -16,6 +16,18 @@ router.get(
   articles_controller.getReadArticles
 );
 
+router.get(
+  "/liked",
+  users_controller.authenticateToken,
+  articles_controller.getLikedArticles
+);
+
+router.get(
+  "/today",
+  users_controller.authenticateToken,
+  articles_controller.getTodayArticles
+);
+
 router.get("/:id", articles_controller.getArticleById);
 
 router.post(

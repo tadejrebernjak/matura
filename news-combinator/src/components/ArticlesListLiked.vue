@@ -25,7 +25,7 @@
         }}
       </p>
       <p class="mt-2 text-gray-800">
-        {{ "Prebral " + article.readAgo }}
+        {{ "Všečkal " + article.likedAgo }}
       </p>
     </div>
   </div>
@@ -33,7 +33,7 @@
 
 <script>
 export default {
-  name: "ArticlesListRead",
+  name: "ArticlesListLiked",
   props: {
     articles: Array,
   },

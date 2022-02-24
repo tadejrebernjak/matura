@@ -21,6 +21,36 @@ exports.getReadArticles = async function (req, res) {
   }
 };
 
+exports.getLikedArticles = async function (req, res) {
+  try {
+    let articles = await Article.find({
+      "likes.userID": req.user._id,
+    });
+    res.send(articles);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getTodayArticles = async function (req, res) {
+  try {
+    const now = new Date();
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    let articles = await Article.find({
+      timestamp: { $gte: startOfToday },
+    }).sort({ timestamp: -1 });
+
+    res.send(articles);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.getArticleById = async function (req, res) {
   try {
     let article = await Article.findOne({ _id: req.params.id }).lean().exec();

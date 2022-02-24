@@ -25,6 +25,30 @@ class ArticlesService {
     }
   }
 
+  // Articles from the current day
+  static async getTodayArticles() {
+    try {
+      const response = await api.get("articles/today");
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      return;
+    }
+  }
+
+  // Articles that the user liked
+  static async getLikedArticles() {
+    try {
+      const response = await api.get("articles/liked");
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      return;
+    }
+  }
+
   // Article details
   static async getArticleById(id) {
     try {

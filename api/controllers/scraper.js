@@ -330,25 +330,16 @@ function extractUrlCategory(url) {
 }
 
 function getTimestamp(date, time) {
-  const toTimestamp = (strDate) => {
-    const dt = Date.parse(strDate);
-    return dt / 1000;
-  };
-
   const dateSplit = date.split(".");
-
-  let day = dateSplit[0];
-  if (day < 10) day = "0" + day;
-
-  let month = dateSplit[1];
-  if (month < 10) month = "0" + month;
-
+  const day = dateSplit[0];
+  const month = dateSplit[1];
   const year = dateSplit[2];
 
-  const timestamp = toTimestamp(
-    month + "/" + day + "/" + year + " " + time + ":00"
-  );
-  const dateObject = new Date(timestamp);
+  const timeSplit = time.split(":");
+  const hours = timeSplit[0];
+  const minutes = timeSplit[1];
+
+  const dateObject = new Date(year, month, day, hours, minutes, 0, 0);
   return dateObject;
 }
 

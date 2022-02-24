@@ -25,15 +25,19 @@
       </div>
     </router-link>
 
-    <div class="action-card">
-      <i class="fas fa-thumbs-up"></i>
-      <h2>Všečkane novice</h2>
-    </div>
+    <router-link to="/liked">
+      <div class="action-card">
+        <i class="fas fa-thumbs-up"></i>
+        <h2>Všečkane novice</h2>
+      </div>
+    </router-link>
 
-    <div class="action-card">
-      <i class="fas fa-calendar-day"></i>
-      <h2>Novice dneva</h2>
-    </div>
+    <router-link to="/today">
+      <div class="action-card">
+        <i class="fas fa-calendar-day"></i>
+        <h2>Novice dneva</h2>
+      </div>
+    </router-link>
 
     <div class="action-card">
       <i class="far fa-newspaper"></i>

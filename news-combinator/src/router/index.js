@@ -6,6 +6,8 @@ import Article from "../views/Article.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Profile from "../views/Profile.vue";
 import Read from "../views/Read.vue";
+import Liked from "../views/Liked.vue";
+import Today from "../views/Today.vue";
 
 const routes = [
   {
@@ -77,6 +79,24 @@ const routes = [
       }
       next();
     },
+  },
+  {
+    path: "/liked",
+    name: "Liked",
+    component: Liked,
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem("token")) {
+        return next({
+          name: "Login",
+        });
+      }
+      next();
+    },
+  },
+  {
+    path: "/today",
+    name: "Today",
+    component: Today,
   },
   {
     path: "/article/:id",
