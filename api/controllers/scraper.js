@@ -102,10 +102,11 @@ exports.scrapeDelo = async function () {
         .find(".article_teaser_timeline__date_holder")
         .text()
         .trim();
-      const time = $(this)
+      let time = $(this)
         .find(".article_teaser_timeline__time_holder")
         .text()
         .trim();
+      time = formatHours(time);
       const timestamp = getTimestamp(date, time);
       const summary = $(this)
         .find(".article_teaser_timeline__subtitle_text")
@@ -164,7 +165,8 @@ exports.scrapeSiol = async function () {
         (today.getMonth() + 1) +
         "." +
         today.getFullYear();
-      const time = $(this).find(".card__time").text().trim();
+      let time = $(this).find(".card__time").text().trim();
+      time = formatHours(time);
       const timestamp = getTimestamp(date, time);
       const summary = $(this).find(".card__description").text().trim();
       const category = $(this).find(".card__overtitle").text().trim();
@@ -229,10 +231,11 @@ exports.scrapeSlovenskeNovice = async function () {
           .find(".article_teaser_timeline__date_holder")
           .text()
           .trim();
-        const time = $(this)
+        let time = $(this)
           .find(".article_teaser_timeline__time_holder")
           .text()
           .trim();
+        time = formatHours(time);
         const timestamp = getTimestamp(date, time);
         const category = extractUrlCategory(url);
 
@@ -327,6 +330,20 @@ function extractUrlCategory(url) {
   category = url.split("/");
 
   return category[3];
+}
+
+function formatHours(timeString) {
+  const timeSplit = timeString.split(":");
+
+  let hours = timeSplit[0];
+  const minutes = timeSplit[1];
+
+  if (hours.length > 1) {
+    hours = hours[1];
+  }
+
+  const newTime = hours + ":" + minutes;
+  return newTime;
 }
 
 function getTimestamp(date, time) {

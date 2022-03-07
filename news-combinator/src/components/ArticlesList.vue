@@ -1,17 +1,25 @@
 <template>
+  <Paginator
+    v-if="pages > 1"
+    :pages="pages"
+    :currentPage="currentPage"
+    @changePage="changePage"
+  />
   <div
     class="grid md:grid-cols-3 sm:grid-cols-2 gap-4 grid-flow-row place-content-center"
   >
     <div
       class="card"
-      v-for="(article, index) in articles"
+      v-for="(article, index) in shownArticles"
       :item="article"
       :index="index"
       :key="article.id"
     >
       <div class="card-header w-full">
         <img class="card-image" :src="article.image" />
-        <div class="card-source">{{ article.source }}</div>
+        <div class="card-source" :class="article.source">
+          {{ article.source }}
+        </div>
       </div>
       <div class="card-body">
         <h2 class="card-title">{{ article.title }}</h2>
@@ -31,16 +39,29 @@
       </router-link>
     </div>
   </div>
+  <Paginator
+    v-if="pages > 1"
+    :pages="pages"
+    :currentPage="currentPage"
+    @changePage="changePage"
+  />
 </template>
 
 <script>
 import ArticlesService from "../articlesService";
+import Paginator from "@/components/Paginator";
 
 export default {
   name: "ArticlesList",
+  components: {
+    Paginator,
+  },
   data() {
     return {
       articles: [],
+      shownArticles: [],
+      pages: 10,
+      currentPage: 1,
       error: "",
     };
   },
@@ -48,9 +69,22 @@ export default {
     async getArticles() {
       try {
         this.articles = await ArticlesService.getAllArticles();
+        this.pages = Math.ceil(this.articles.length / 30);
+
+        this.changePageArticles();
       } catch (error) {
         this.error = error.message;
       }
+    },
+    changePage(newPage) {
+      this.currentPage = newPage;
+      this.changePageArticles();
+    },
+    changePageArticles() {
+      this.shownArticles = this.articles.slice(
+        (this.currentPage - 1) * 30,
+        this.currentPage * 30
+      );
     },
   },
   beforeMount() {
@@ -62,7 +96,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .card {
-  @apply w-full max-w-sm inline border border-gray-400 relative bg-gray-50 shadow-xl;
+  @apply w-full max-w-sm inline border border-gray-400 relative bg-gray-50 shadow-md;
 }
 
 .card-body {

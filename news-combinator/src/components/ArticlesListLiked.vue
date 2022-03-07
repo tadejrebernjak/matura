@@ -20,7 +20,7 @@
         {{
           article.summary.substring(
             0,
-            200 + article.summary.substring(199).indexOf(" ")
+            150 + article.summary.substring(149).indexOf(" ")
           ) + "..."
         }}
       </p>
@@ -42,7 +42,8 @@ export default {
 
 <style scoped>
 .card {
-  @apply w-full relative border border-gray-400 bg-gray-50 shadow-xl flex mb-4;
+  min-height: 204px;
+  @apply w-full relative border border-gray-400 bg-gray-50 shadow-md flex mb-4;
 }
 
 .card-image {
@@ -51,6 +52,7 @@ export default {
 
 .card-image img {
   width: 100%;
+  max-height: 180px;
 }
 
 .card-source {

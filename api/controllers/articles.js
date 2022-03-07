@@ -3,7 +3,7 @@ let User = require("../models/user");
 
 exports.getArticles = async function (req, res) {
   try {
-    let articles = await Article.find({}).sort({ timestamp: -1 }).limit(30);
+    let articles = await Article.find({}).sort({ timestamp: -1 });
     res.send(articles);
   } catch (error) {
     console.log(error);
@@ -43,7 +43,6 @@ exports.getTodayArticles = async function (req, res) {
       0,
       0
     );
-    console.log(startOfToday);
 
     let articles = await Article.find({
       timestamp: { $gte: startOfToday },

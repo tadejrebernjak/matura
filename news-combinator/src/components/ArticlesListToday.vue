@@ -20,14 +20,16 @@
         {{
           article.summary.substring(
             0,
-            200 + article.summary.substring(199).indexOf(" ")
+            150 + article.summary.substring(149).indexOf(" ")
           ) + "..."
         }}
       </p>
-      <p class="mt-2 text-gray-800">
-        {{ article.time }}
-      </p>
     </div>
+    <p class="mt-5 absolute bottom-4 right-2 text-right">
+      <span class="p-2 rounded-md bg-green-500 text-white font-semibold">{{
+        article.time
+      }}</span>
+    </p>
   </div>
 </template>
 
@@ -42,7 +44,8 @@ export default {
 
 <style scoped>
 .card {
-  @apply w-full relative border border-gray-400 bg-gray-50 shadow-xl flex mb-4;
+  min-height: 204px;
+  @apply w-full relative border border-gray-400 bg-gray-50 shadow-md flex mb-4;
 }
 
 .card-image {
@@ -51,6 +54,7 @@ export default {
 
 .card-image img {
   width: 100%;
+  max-height: 180px;
 }
 
 .card-source {
@@ -58,7 +62,7 @@ export default {
 }
 
 .card-content {
-  @apply w-full p-4;
+  @apply w-full p-4 pb-6;
 }
 
 .card-title {
