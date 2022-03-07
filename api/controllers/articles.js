@@ -38,8 +38,12 @@ exports.getTodayArticles = async function (req, res) {
     const startOfToday = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate()
+      now.getDate(),
+      1,
+      0,
+      0
     );
+    console.log(startOfToday);
 
     let articles = await Article.find({
       timestamp: { $gte: startOfToday },

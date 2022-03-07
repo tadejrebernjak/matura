@@ -339,7 +339,7 @@ function getTimestamp(date, time) {
   const hours = timeSplit[0];
   const minutes = timeSplit[1];
 
-  const dateObject = new Date(year, month, day, hours, minutes, 0, 0);
+  const dateObject = new Date(year, month - 1, day, hours + 1, minutes, 0, 0);
   return dateObject;
 }
 
