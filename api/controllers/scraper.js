@@ -268,44 +268,6 @@ exports.scrapeSlovenskeNovice = async function () {
   }
 };
 
-// NOT WORKING - can't find elements inside page
-exports.scrapeDnevnik = async function () {
-  const provider = settings.providers.find(
-    (provider) => provider.name === "dnevnik"
-  );
-  try {
-    const articlesResponse = await axios(provider.url);
-    var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
-
-    $(".tl-article", articlesResponse.data).each(function () {
-      const source = "Dnevnik";
-      const url = provider.baseUrl + $(this).find("h2 > a").attr("href");
-      const title = $(this).find("h2 > a").text().trim();
-      const summary = $(this).find("p").text().trim();
-      const category = $(this).find(".news-item-category").text().trim();
-      const image = provider.baseUrl + $(this).find("img").attr("src");
-
-      const article = new Article({
-        source: source,
-        url: url,
-        title: title,
-        date: date,
-        time: time,
-        timestamp: timestamp,
-        summary: summary,
-        category: category,
-        image: image,
-      });
-
-      articles.push(article);
-    });
-    return articles;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 function extractHostname(url) {
   var hostname;
   //find & remove protocol (http, ftp, etc.) and get hostname
@@ -338,7 +300,7 @@ function formatHours(timeString) {
   let hours = timeSplit[0];
   const minutes = timeSplit[1];
 
-  if (hours.length > 1) {
+  if (hours < 10 && hours.length > 1) {
     hours = hours[1];
   }
 
@@ -348,15 +310,19 @@ function formatHours(timeString) {
 
 function getTimestamp(date, time) {
   const dateSplit = date.split(".");
-  const day = dateSplit[0];
-  const month = dateSplit[1];
-  const year = dateSplit[2];
+
+  const day = parseInt(dateSplit[0]);
+  let month = parseInt(dateSplit[1]);
+  month--;
+  const year = parseInt(dateSplit[2]);
 
   const timeSplit = time.split(":");
-  const hours = timeSplit[0];
-  const minutes = timeSplit[1];
 
-  const dateObject = new Date(year, month - 1, day, hours + 1, minutes, 0, 0);
+  let hours = parseInt(timeSplit[0]);
+  hours++;
+  const minutes = parseInt(timeSplit[1]);
+
+  const dateObject = new Date(year, month, day, hours, minutes, 0);
   return dateObject;
 }
 
