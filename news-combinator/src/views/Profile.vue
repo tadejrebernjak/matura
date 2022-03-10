@@ -1,5 +1,11 @@
 <template>
-  <h1 class="text-3xl text-center">Urejanje profila</h1>
+  <h1 class="text-3xl text-center">
+    <router-link to="/">Domov</router-link>
+    <span v-if="authenticated">
+      > <router-link to="/dashboard">Nadzorna Plošča</router-link></span
+    >
+    > <span class="text-green-600">Urejanje profila</span>
+  </h1>
   <div
     class="my-10 border border-gray-400 rounded-md shadow-md flex flex-wrap overflow-hidden"
   >

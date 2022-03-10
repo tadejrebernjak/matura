@@ -1,75 +1,23 @@
 <template>
-  <div
-    class="card"
-    v-for="(article, index) in articles"
+  <NewsCardWide
+    v-for="article in articles"
     :item="article"
-    :index="index"
     :key="article.id"
-  >
-    <div class="card-image">
-      <div class="card-source">{{ article.source }}</div>
-      <router-link :to="'/article/' + article._id">
-        <img class="card-image" :src="article.image" />
-      </router-link>
-    </div>
-    <div class="card-content">
-      <router-link :to="'/article/' + article._id">
-        <h2 class="card-title">{{ article.title }}</h2>
-      </router-link>
-      <p class="card-description">
-        {{
-          article.summary.substring(
-            0,
-            150 + article.summary.substring(149).indexOf(" ")
-          ) + "..."
-        }}
-      </p>
-    </div>
-    <p class="mt-5 absolute bottom-4 right-2 text-right">
-      <span class="p-2 rounded-md bg-green-500 text-white font-semibold">{{
-        article.time
-      }}</span>
-    </p>
-  </div>
+    :article="article"
+    :type="'today'"
+  />
 </template>
 
 <script>
+import NewsCardWide from "@/components/NewsCardWide.vue";
+
 export default {
   name: "ArticlesListToday",
+  components: {
+    NewsCardWide,
+  },
   props: {
     articles: Array,
   },
 };
 </script>
-
-<style scoped>
-.card {
-  min-height: 204px;
-  @apply w-full relative border border-gray-400 bg-gray-50 shadow-md flex mb-4;
-}
-
-.card-image {
-  @apply object-cover w-3/5 p-3 relative;
-}
-
-.card-image img {
-  width: 100%;
-  max-height: 180px;
-}
-
-.card-source {
-  @apply absolute top-3 left-3 inline w-auto p-1 px-2 bg-green-600 text-white z-50 shadow-md;
-}
-
-.card-content {
-  @apply w-full p-4 pb-6;
-}
-
-.card-title {
-  @apply text-xl leading-5 border-b border-gray-400 py-1 mb-2 font-semibold hover:underline;
-}
-
-.card-description {
-  @apply text-gray-600;
-}
-</style>

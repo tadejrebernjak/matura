@@ -64,8 +64,13 @@ export default {
   beforeMount() {
     this.refreshPages();
   },
-  updated() {
-    this.refreshPages();
+  watch: {
+    currentPage: function () {
+      this.refreshPages();
+    },
+    pages: function () {
+      this.refreshPages();
+    },
   },
 };
 </script>

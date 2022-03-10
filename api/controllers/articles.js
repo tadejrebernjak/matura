@@ -10,6 +10,19 @@ exports.getArticles = async function (req, res) {
   }
 };
 
+exports.searchArticles = async function (req, res) {
+  const query = req.params.query;
+
+  try {
+    let articles = await Article.find({
+      title: { $regex: query, $options: "i" },
+    }).sort({ timestamp: -1 });
+    res.send(articles);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.getReadArticles = async function (req, res) {
   try {
     let articles = await Article.find({

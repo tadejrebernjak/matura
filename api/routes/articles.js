@@ -10,6 +10,8 @@ var users_controller = require("../controllers/users");
 
 router.get("/", articles_controller.getArticles);
 
+router.get("/search/:query", articles_controller.searchArticles);
+
 router.get(
   "/read",
   users_controller.authenticateToken,
@@ -22,11 +24,7 @@ router.get(
   articles_controller.getLikedArticles
 );
 
-router.get(
-  "/today",
-  users_controller.authenticateToken,
-  articles_controller.getTodayArticles
-);
+router.get("/today", articles_controller.getTodayArticles);
 
 router.get("/:id", articles_controller.getArticleById);
 

@@ -68,7 +68,7 @@ export default {
 
 .article-preview {
   background-color: rgba(0, 0, 0, 0.6);
-  @apply p-7 relative rounded-lg shadow-2xl;
+  @apply p-7 relative rounded-lg shadow-md;
 }
 
 .actions {

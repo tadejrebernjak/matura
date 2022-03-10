@@ -63,7 +63,9 @@ export default {
     async getArticle(id) {
       try {
         this.article = await ArticlesService.getArticleById(id);
-        this.articleImg = "url(" + this.article.image + ")";
+        if (this.article.image == "https://siol.netundefined")
+          this.articleImg = null;
+        else this.articleImg = "url(" + this.article.image + ")";
         this.counters.comments = this.article.comments.length;
         this.counters.likes = this.article.likes.length;
         this.counters.dislikes = this.article.dislikes.length;

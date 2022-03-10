@@ -1,6 +1,6 @@
 <template>
   <Header />
-  <div class="container max-w-4xl mx-auto p-2 my-12">
+  <div class="container max-w-4xl mx-auto p-2 my-8">
     <router-view />
   </div>
   <Footer />

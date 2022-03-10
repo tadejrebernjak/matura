@@ -25,6 +25,18 @@ class ArticlesService {
     }
   }
 
+  // Search articles from search bar query
+  static async searchArticles(query) {
+    try {
+      const response = await api.get("articles/search/" + query);
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      return;
+    }
+  }
+
   // Articles from the current day
   static async getTodayArticles() {
     try {

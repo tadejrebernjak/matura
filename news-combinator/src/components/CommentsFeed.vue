@@ -123,7 +123,7 @@ export default {
 
 <style scoped>
 .comments-feed {
-  @apply my-3 rounded-lg border-2 border-green-500 shadow-2xl overflow-hidden;
+  @apply my-3 rounded-lg border-2 border-green-500 shadow-lg overflow-hidden;
 }
 
 .new-comment-container {
