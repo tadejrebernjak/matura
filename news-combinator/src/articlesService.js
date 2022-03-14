@@ -2,9 +2,11 @@ import api from "../service/baseService";
 
 class ArticlesService {
   // Articles list
-  static async getAllArticles() {
+  static async getArticles(category) {
     try {
-      const response = await api.get("articles");
+      let response;
+
+      response = await api.get("articles/find/" + category);
       const data = response.data;
 
       return data;

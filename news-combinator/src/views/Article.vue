@@ -1,4 +1,8 @@
 <template>
+  <h1 class="text-3xl border-b border-gray-600 pb-4 mb-4">
+    <router-link to="/">Domov</router-link> >
+    <span class="text-green-500">{{ article.title }}</span>
+  </h1>
   <ArticlePreview
     :article="article"
     :counters="counters"

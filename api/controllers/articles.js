@@ -3,7 +3,25 @@ let User = require("../models/user");
 
 exports.getArticles = async function (req, res) {
   try {
-    let articles = await Article.find({}).sort({ timestamp: -1 });
+    console.log(req.params.category);
+    let articles;
+
+    if (req.params.category == "sport") {
+      const categories = ["sport", "sportal", "Sportal"];
+
+      articles = await Article.find({ category: { $in: categories } }).sort({
+        timestamp: -1,
+      });
+    } else if (req.params.category == "chronicle") {
+      const categories = ["kronika", "crna-kronika"];
+
+      articles = await Article.find({ category: { $in: categories } }).sort({
+        timestamp: -1,
+      });
+    } else {
+      articles = await Article.find({}).sort({ timestamp: -1 });
+    }
+
     res.send(articles);
   } catch (error) {
     console.log(error);

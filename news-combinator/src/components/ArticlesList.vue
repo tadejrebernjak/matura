@@ -50,7 +50,12 @@ export default {
   methods: {
     async getArticles() {
       try {
-        this.articles = await ArticlesService.getAllArticles();
+        if (this.$route.params.category == "sport")
+          this.articles = await ArticlesService.getArticles("sport");
+        else if (this.$route.params.category == "chronicle")
+          this.articles = await ArticlesService.getArticles("chronicle");
+        else this.articles = await ArticlesService.getArticles("all");
+        console.log("kronika");
         this.pages = Math.ceil(this.articles.length / 30);
 
         this.changePageArticles();
@@ -80,6 +85,11 @@ export default {
   },
   beforeMount() {
     this.getArticles();
+  },
+  watch: {
+    "$route.params.category": function () {
+      this.getArticles();
+    },
   },
 };
 </script>

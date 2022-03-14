@@ -3,9 +3,17 @@
     <div
       class="container max-w-4xl mx-auto p-6 flex flex-row justify-between flex-wrap content-center"
     >
-      <router-link to="/">
-        <h1 class="text-4xl font-sans">Novice</h1>
-      </router-link>
+      <div class=" ">
+        <router-link to="/">
+          <span class="text-4xl font-sans">Novice</span>
+        </router-link>
+        <router-link to="/news/sport" class="ml-4">
+          <span class="text-xl font-sans">Šport</span>
+        </router-link>
+        <router-link to="/news/chronicle" class="ml-2">
+          <span class="text-xl font-sans">Kronika</span>
+        </router-link>
+      </div>
       <div class="flex content-center">
         <template v-if="!authenticated">
           <router-link to="/login">

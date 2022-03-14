@@ -25,11 +25,6 @@ const settings = {
       url: "https://www.slovenskenovice.si/zadnje/",
       baseUrl: "https://www.slovenskenovice.si",
     },
-    {
-      name: "dnevnik",
-      url: "https://www.dnevnik.si/zadnje-novice",
-      baseUrl: "https://www.dnevnik.si",
-    },
   ],
 };
 
@@ -53,7 +48,7 @@ exports.scrape24ur = async function () {
       time = time.split(" ").pop();
       const timestamp = getTimestamp(date, time);
       const summary = $(this).find(".card__summary").text().trim();
-      const category = $(this).find(".card__label").text().trim();
+      const category = extractUrlCategory(url, 3);
       const image = $(this).find("img").attr("src");
 
       const article = new Article({
@@ -112,7 +107,7 @@ exports.scrapeDelo = async function () {
         .find(".article_teaser_timeline__subtitle_text")
         .text()
         .trim();
-      const category = $(this).find(".article_supertitle").text().trim();
+      const category = extractUrlCategory(url, 3);
 
       const article = new Article({
         source: source,
@@ -169,7 +164,7 @@ exports.scrapeSiol = async function () {
       time = formatHours(time);
       const timestamp = getTimestamp(date, time);
       const summary = $(this).find(".card__description").text().trim();
-      const category = $(this).find(".card__overtitle").text().trim();
+      const category = extractUrlCategory(url, 4);
 
       const article = new Article({
         source: source,
@@ -237,7 +232,7 @@ exports.scrapeSlovenskeNovice = async function () {
           .trim();
         time = formatHours(time);
         const timestamp = getTimestamp(date, time);
-        const category = extractUrlCategory(url);
+        const category = extractUrlCategory(url, 3);
 
         const article = new Article({
           source: source,
@@ -286,12 +281,14 @@ function extractHostname(url) {
   return hostname;
 }
 
-function extractUrlCategory(url) {
+function extractUrlCategory(url, index) {
   var category;
 
   category = url.split("/");
 
-  return category[3];
+  if (category[3] == "sportal") return "sport";
+
+  return category[index];
 }
 
 function formatHours(timeString) {

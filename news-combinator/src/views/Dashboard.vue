@@ -39,10 +39,12 @@
       </div>
     </router-link>
 
-    <div class="action-card">
-      <i class="far fa-newspaper"></i>
-      <h2>Seznam novic</h2>
-    </div>
+    <router-link to="/">
+      <div class="action-card">
+        <i class="far fa-newspaper"></i>
+        <h2>Seznam novic</h2>
+      </div>
+    </router-link>
   </div>
 </template>
 

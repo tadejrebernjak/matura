@@ -16,6 +16,16 @@ const routes = [
     component: Home,
   },
   {
+    path: "/news",
+    name: "News",
+    component: Home,
+  },
+  {
+    path: "/news/:category",
+    name: "News",
+    component: Home,
+  },
+  {
     path: "/login",
     name: "Login",
     component: Login,

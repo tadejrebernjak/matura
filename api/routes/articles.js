@@ -8,7 +8,7 @@ var users_controller = require("../controllers/users");
 
 // ARTICLES
 
-router.get("/", articles_controller.getArticles);
+router.get("/find/:category", articles_controller.getArticles);
 
 router.get("/search/:query", articles_controller.searchArticles);
 

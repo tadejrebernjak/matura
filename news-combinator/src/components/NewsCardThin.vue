@@ -7,6 +7,9 @@
       <span v-else>
         <img class="card-image" :src="article.image" />
       </span>
+      <div class="card-source" :class="article.source">
+        {{ article.source }}
+      </div>
     </div>
     <div class="card-body">
       <h2 class="card-title">{{ article.title }}</h2>
