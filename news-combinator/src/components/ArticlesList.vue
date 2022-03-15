@@ -147,7 +147,7 @@ export default {
 
       this.pages = Math.ceil(this.filteredArticles.length / 30);
 
-      this.changePageArticles(this.filteredArticles);
+      this.changePageArticles();
     },
   },
   beforeMount() {
