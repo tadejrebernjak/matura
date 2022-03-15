@@ -3,7 +3,6 @@ let User = require("../models/user");
 
 exports.getArticles = async function (req, res) {
   try {
-    console.log(req.params.category);
     let articles;
 
     if (req.params.category == "sport") {
@@ -13,7 +12,7 @@ exports.getArticles = async function (req, res) {
         timestamp: -1,
       });
     } else if (req.params.category == "chronicle") {
-      const categories = ["kronika", "crna-kronika"];
+      const categories = ["kronika", "crna-kronika", "Črna kronika", "Kronika"];
 
       articles = await Article.find({ category: { $in: categories } }).sort({
         timestamp: -1,
@@ -32,9 +31,28 @@ exports.searchArticles = async function (req, res) {
   const query = req.params.query;
 
   try {
-    let articles = await Article.find({
-      title: { $regex: query, $options: "i" },
-    }).sort({ timestamp: -1 });
+    let articles;
+
+    if (req.params.category == "sport") {
+      const categories = ["sport", "sportal", "Sportal"];
+
+      articles = await Article.find({
+        title: { $regex: query, $options: "i" },
+        category: { $in: categories },
+      }).sort({ timestamp: -1 });
+    } else if (req.params.category == "chronicle") {
+      const categories = ["kronika", "crna-kronika", "Črna kronika", "Kronika"];
+
+      articles = await Article.find({
+        title: { $regex: query, $options: "i" },
+        category: { $in: categories },
+      }).sort({ timestamp: -1 });
+    } else {
+      articles = await Article.find({
+        title: { $regex: query, $options: "i" },
+      }).sort({ timestamp: -1 });
+    }
+
     res.send(articles);
   } catch (error) {
     console.log(error);

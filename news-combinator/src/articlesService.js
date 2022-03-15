@@ -28,9 +28,11 @@ class ArticlesService {
   }
 
   // Search articles from search bar query
-  static async searchArticles(query) {
+  static async searchArticles(query, category) {
     try {
-      const response = await api.get("articles/search/" + query);
+      const response = await api.get(
+        "articles/search/" + query + "/" + category
+      );
       const data = response.data;
 
       return data;
