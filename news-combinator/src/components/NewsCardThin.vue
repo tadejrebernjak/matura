@@ -61,7 +61,7 @@ export default {
 }
 
 .card-source {
-  @apply absolute top-0 left-0 inline w-auto p-1 px-2 bg-green-600 text-white;
+  @apply absolute top-0 left-0 inline w-auto p-1 px-2 bg-green-500 font-semibold text-white;
 }
 
 .card-title {

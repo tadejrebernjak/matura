@@ -97,7 +97,7 @@ export default {
     search(query) {
       if (query != "") {
         this.queriedArticles = this.articles.filter((article) =>
-          article.title.includes(query)
+          article.title.toLowerCase().includes(query)
         );
       } else {
         this.queriedArticles = this.articles;

@@ -7,6 +7,7 @@
     :currentPage="currentPage"
     @changePage="changePage"
   />
+  <OrderSelect :order="order" @select="orderSelect" />
   <div
     class="grid mt-5 md:grid-cols-3 sm:grid-cols-2 gap-4 grid-flow-row place-content-center"
   >
@@ -32,6 +33,7 @@ import NewsCardThin from "@/components/NewsCardThin";
 import Paginator from "@/components/Paginator";
 import Searchbar from "@/components/Searchbar";
 import SourcesFilter from "@/components/SourcesFilter";
+import OrderSelect from "@/components/OrderSelect";
 
 export default {
   name: "ArticlesList",
@@ -40,6 +42,7 @@ export default {
     Searchbar,
     NewsCardThin,
     SourcesFilter,
+    OrderSelect,
   },
   data() {
     return {
@@ -48,6 +51,7 @@ export default {
       shownArticles: [],
       pages: 10,
       currentPage: 1,
+      order: "newest",
       toggledSources: {
         ur: true,
         Delo: true,
@@ -147,7 +151,41 @@ export default {
 
       this.pages = Math.ceil(this.filteredArticles.length / 30);
 
+      this.orderArticles();
       this.changePageArticles();
+    },
+    orderSelect(order) {
+      this.order = order;
+
+      this.orderArticles();
+      this.changePageArticles();
+    },
+    orderArticles() {
+      switch (this.order) {
+        case "newest":
+          this.filteredArticles.sort((a, b) =>
+            b.timestamp > a.timestamp ? 1 : -1
+          );
+          console.log("newest");
+          break;
+        case "oldest":
+          this.filteredArticles.sort((a, b) =>
+            a.timestamp > b.timestamp ? 1 : -1
+          );
+          console.log("oldest");
+          break;
+        case "popular":
+          this.filteredArticles.sort(
+            (a, b) =>
+              b.likes.length - a.likes.length || b.timestamp - a.timestamp
+          );
+          break;
+        default:
+          this.filteredArticles.sort((a, b) =>
+            b.timestamp > a.timestamp ? 1 : -1
+          );
+          break;
+      }
     },
   },
   beforeMount() {

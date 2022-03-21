@@ -8,10 +8,13 @@
           <span class="text-4xl font-sans">Novice</span>
         </router-link>
         <router-link to="/news/sport" class="ml-4">
-          <span class="text-xl font-sans">Šport</span>
+          <span class="text-xl font-sans uppercase">Šport</span>
         </router-link>
         <router-link to="/news/chronicle" class="ml-2">
-          <span class="text-xl font-sans">Kronika</span>
+          <span class="text-xl font-sans uppercase">Kronika</span>
+        </router-link>
+        <router-link to="/today" class="ml-2">
+          <span class="text-xl font-sans uppercase">Danes</span>
         </router-link>
       </div>
       <div class="flex content-center">
