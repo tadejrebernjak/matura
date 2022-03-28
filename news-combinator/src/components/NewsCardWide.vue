@@ -1,7 +1,17 @@
 <template>
   <div class="card">
     <div class="card-image">
-      <div class="card-source">{{ article.source }}</div>
+      <div
+        class="card-source"
+        :class="{
+          stiriindvajsetur: article.source === '24ur',
+          delo: article.source === 'Delo',
+          slovenskenovice: article.source === 'Slovenske Novice',
+          siol: article.source === 'Siol',
+        }"
+      >
+        {{ article.source }}
+      </div>
       <router-link :to="'/article/' + article._id">
         <span v-if="article.image == 'https://siol.netundefined'">
           <img class="card-image" :src="noImage" />
@@ -71,7 +81,24 @@ export default {
 }
 
 .card-source {
-  @apply absolute top-3 left-3 inline w-auto p-1 px-2 bg-green-600 text-white z-50 shadow-md;
+  @apply absolute top-3 left-3 inline w-auto p-1 px-2 bg-green-600 text-white z-50 shadow-md font-bold uppercase;
+}
+
+.stiriindvajsetur {
+  background-color: #404faf;
+}
+
+.siol {
+  background-color: #424193;
+}
+
+.slovenskenovice {
+  background-color: #c60000;
+}
+
+.delo {
+  background-color: #fff;
+  color: #1f5ab1;
 }
 
 .card-content {

@@ -7,7 +7,15 @@
       <span v-else>
         <img class="card-image" :src="article.image" />
       </span>
-      <div class="card-source" :class="article.source">
+      <div
+        class="card-source"
+        :class="{
+          stiriindvajsetur: article.source === '24ur',
+          delo: article.source === 'Delo',
+          slovenskenovice: article.source === 'Slovenske Novice',
+          siol: article.source === 'Siol',
+        }"
+      >
         {{ article.source }}
       </div>
     </div>
@@ -61,7 +69,24 @@ export default {
 }
 
 .card-source {
-  @apply absolute top-0 left-0 inline w-auto p-1 px-2 bg-green-500 font-semibold text-white;
+  @apply absolute top-0 left-0 inline w-auto p-1 px-2 bg-green-500 font-bold text-white uppercase;
+}
+
+.stiriindvajsetur {
+  background-color: #404faf;
+}
+
+.siol {
+  background-color: #424193;
+}
+
+.slovenskenovice {
+  background-color: #c60000;
+}
+
+.delo {
+  background-color: #fff;
+  color: #1f5ab1;
 }
 
 .card-title {

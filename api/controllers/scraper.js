@@ -45,6 +45,7 @@ exports.scrape24ur = async function () {
       let date = $(this).find(".timeline__date").text().trim();
       let time = $(this).find(".timeline__time").text().trim();
       date = date.replace(/\s+/g, "");
+      date = formatDate(date);
       time = time.split(" ").pop();
       const timestamp = getTimestamp(date, time);
       const summary = $(this).find(".card__summary").text().trim();
@@ -93,10 +94,11 @@ exports.scrapeDelo = async function () {
         .find(".article_teaser_timeline__title_text")
         .text()
         .trim();
-      const date = $(this)
+      let date = $(this)
         .find(".article_teaser_timeline__date_holder")
         .text()
         .trim();
+      date = formatDate(date);
       let time = $(this)
         .find(".article_teaser_timeline__time_holder")
         .text()
@@ -154,12 +156,13 @@ exports.scrapeSiol = async function () {
       const url = provider.baseUrl + $(this).find(".card__link").attr("href");
       const title = $(this).find(".card__title").text().trim();
       const today = new Date();
-      const date =
+      let date =
         today.getDate() +
         "." +
         (today.getMonth() + 1) +
         "." +
         today.getFullYear();
+      date = formatDate(date);
       let time = $(this).find(".card__time").text().trim();
       time = formatHours(time);
       const timestamp = getTimestamp(date, time);
@@ -222,10 +225,11 @@ exports.scrapeSlovenskeNovice = async function () {
           .find(".article_teaser_timeline__subtitle_text")
           .text()
           .trim();
-        const date = $(this)
+        let date = $(this)
           .find(".article_teaser_timeline__date_holder")
           .text()
           .trim();
+        date = formatDate(date);
         let time = $(this)
           .find(".article_teaser_timeline__time_holder")
           .text()
@@ -303,6 +307,23 @@ function formatHours(timeString) {
 
   const newTime = hours + ":" + minutes;
   return newTime;
+}
+
+function formatDate(dateString) {
+  const dateSplit = dateString.split(".");
+
+  let day = dateSplit[0];
+  let month = dateSplit[1];
+
+  if (day < 10 && day.length > 1) {
+    day = day[1];
+  }
+  if (month < 10 && month.length > 1) {
+    month = month[1];
+  }
+
+  const newDate = day + "." + month + "." + dateSplit[2];
+  return newDate;
 }
 
 function getTimestamp(date, time) {
