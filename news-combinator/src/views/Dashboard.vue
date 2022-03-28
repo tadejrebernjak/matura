@@ -11,13 +11,6 @@
       </div>
     </router-link>
 
-    <router-link to="/comments">
-      <div class="action-card">
-        <i class="fas fa-comments"></i>
-        <h2>Vaši komentarji</h2>
-      </div>
-    </router-link>
-
     <router-link to="/read">
       <div class="action-card">
         <i class="fas fa-clock"></i>
@@ -45,6 +38,13 @@
         <h2>Seznam novic</h2>
       </div>
     </router-link>
+
+    <router-link to="/admin" v-if="isAdmin">
+      <div class="admin-card">
+        <i class="fas fa-unlock-alt"></i>
+        <h2>Admin panel</h2>
+      </div>
+    </router-link>
   </div>
 </template>
 
@@ -58,6 +58,7 @@ export default {
     ...mapGetters({
       authenticated: "auth/authenticated",
       user: "auth/user",
+      isAdmin: "auth/isAdmin",
     }),
   },
   data() {
@@ -75,11 +76,17 @@ export default {
   @apply p-5 py-10 md:max-w-xs sm:max-w-lg text-center font-semibold text-2xl text-green-100 hover:text-white bg-gradient-to-r from-green-400 to-green-500 border-2 border-green-600 rounded-md shadow-lg cursor-pointer transition-all duration-300;
 }
 
-.action-card:hover {
+.admin-card {
+  @apply p-5 py-10 md:max-w-xs sm:max-w-lg text-center font-semibold text-2xl text-blue-100 hover:text-white bg-gradient-to-r from-blue-400 to-blue-500 border-2 border-blue-600 rounded-md shadow-lg cursor-pointer transition-all duration-300;
+}
+
+.action-card:hover,
+.admin-card:hover {
   transform: translate(-5px, -10px);
 }
 
-.action-card i {
+.action-card i,
+.admin-card i {
   @apply text-6xl mb-2;
 }
 </style>

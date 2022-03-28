@@ -177,6 +177,7 @@ function signToken(res, user) {
     email: user.email,
     username: user.username,
     pfp: user.pfp,
+    isAdmin: user.isAdmin,
   };
 
   const accessToken = jwt.sign(userTokenData, process.env.ACCESS_TOKEN_SECRET);

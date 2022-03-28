@@ -9,6 +9,10 @@ var UserSchema = new mongoose.Schema({
   username: String,
   password: String,
   pfp: String,
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     immutable: true,

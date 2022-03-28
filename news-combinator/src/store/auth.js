@@ -16,6 +16,11 @@ export default {
       }
     },
 
+    isAdmin(state) {
+      if (state.user.isAdmin) return true;
+      else return false;
+    },
+
     user(state) {
       return state.user;
     },

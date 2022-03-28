@@ -26,6 +26,12 @@
     @likeReply="likeReply"
     @dislikeReply="dislikeReply"
   ></CommentsFeed>
+  <Alert
+    :text="'Želite izbrisati komentar?'"
+    @ok="alertOK"
+    @cancel="alertCancel"
+    v-if="alert"
+  />
 </template>
 
 <script>
@@ -34,15 +40,18 @@ import ArticlesService from "../articlesService";
 import ArticlePreview from "../components/ArticlePreview";
 import CommentsFeed from "../components/CommentsFeed";
 import router from "../router";
+import Alert from "../components/Alert.vue";
 
 export default {
   name: "Article",
   components: {
     ArticlePreview,
     CommentsFeed,
+    Alert,
   },
   data() {
     return {
+      alert: false,
       article: "",
       comments: null,
       counters: {
@@ -64,6 +73,12 @@ export default {
     }),
   },
   methods: {
+    alertOK() {
+      this.alert = false;
+    },
+    alertCancel() {
+      this.alert = false;
+    },
     async getArticle(id) {
       try {
         this.article = await ArticlesService.getArticleById(id);
@@ -180,6 +195,9 @@ export default {
     },
 
     async deleteComment(commentID) {
+      console.log(commentID);
+      this.alert = true;
+      /*
       try {
         const response = await ArticlesService.deleteComment(
           this.article._id,
@@ -189,7 +207,7 @@ export default {
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
-      }
+      }*/
     },
     async likeComment(commentID) {
       try {

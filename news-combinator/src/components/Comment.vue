@@ -15,7 +15,7 @@
           </p>
         </div>
         <div
-          v-if="authenticated && user._id === comment.userID"
+          v-if="authenticated && (user._id === comment.userID || user.isAdmin)"
           class="text-xl cursor-pointer hover:text-gray-600"
           @click="$emit('deleteComment', comment._id)"
         >
