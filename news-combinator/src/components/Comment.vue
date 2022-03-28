@@ -142,6 +142,7 @@ export default {
     "editComment",
     "likeComment",
     "dislikeComment",
+    "deleteComment",
     "deleteReply",
     "editReply",
     "likeReply",

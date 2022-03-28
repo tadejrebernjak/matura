@@ -66,12 +66,23 @@ exports.editArticleComment = async function (req, res) {
 
 exports.deleteArticleComment = async function (req, res) {
   try {
-    await Article.updateOne(
-      { _id: req.params.articleID },
-      {
-        $pull: { comments: { _id: req.params.commentID, userID: req.user.id } },
-      }
-    );
+    if (req.user.isAdmin) {
+      await Article.updateOne(
+        { _id: req.params.articleID },
+        {
+          $pull: { comments: { _id: req.params.commentID } },
+        }
+      );
+    } else {
+      await Article.updateOne(
+        { _id: req.params.articleID },
+        {
+          $pull: {
+            comments: { _id: req.params.commentID, userID: req.user.id },
+          },
+        }
+      );
+    }
     res.status(200).send("Deleted comment");
   } catch (error) {
     console.log(error);

@@ -68,17 +68,30 @@ exports.editArticleCommentReply = async function (req, res) {
 
 exports.deleteArticleCommentReply = async function (req, res) {
   try {
-    await Article.updateOne(
-      { _id: req.params.articleID, "comments._id": req.params.commentID },
-      {
-        $pull: {
-          "comments.$.replies": {
-            _id: req.params.replyID,
-            userID: req.user.id,
+    if (req.user.isAdmin) {
+      await Article.updateOne(
+        { _id: req.params.articleID, "comments._id": req.params.commentID },
+        {
+          $pull: {
+            "comments.$.replies": {
+              _id: req.params.replyID,
+            },
           },
-        },
-      }
-    );
+        }
+      );
+    } else {
+      await Article.updateOne(
+        { _id: req.params.articleID, "comments._id": req.params.commentID },
+        {
+          $pull: {
+            "comments.$.replies": {
+              _id: req.params.replyID,
+              userID: req.user.id,
+            },
+          },
+        }
+      );
+    }
     res.status(200).send("Deleted reply");
   } catch (error) {
     console.log(error);

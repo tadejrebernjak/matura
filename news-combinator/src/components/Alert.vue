@@ -34,7 +34,7 @@ export default {
   right: 50%;
   transform: translate(50%, -50%);
   padding: 75px;
-  @apply bg-gray-100;
+  @apply bg-gray-100 rounded-sm shadow-md;
 }
 
 .alert-bg {

@@ -17,12 +17,12 @@
     :commentsCount="counters.comments"
     @newComment="addComment"
     @editComment="editComment"
-    @deleteComment="deleteComment"
+    @deleteComment="deleteCommentConfirm"
     @likeComment="likeComment"
     @dislikeComment="dislikeComment"
     @addReply="addReply"
     @editReply="editReply"
-    @deleteReply="deleteReply"
+    @deleteReply="deleteReplyConfirm"
     @likeReply="likeReply"
     @dislikeReply="dislikeReply"
   ></CommentsFeed>
@@ -63,6 +63,9 @@ export default {
       articleImg: "",
       rating: "",
       newComment: "",
+      CommentID: "",
+      ReplyID: "",
+      deleteType: "",
       error: "",
     };
   },
@@ -75,6 +78,17 @@ export default {
   methods: {
     alertOK() {
       this.alert = false;
+
+      switch (this.deleteType) {
+        case "comment":
+          this.deleteComment(this.commentID);
+          break;
+        case "reply":
+          this.deleteReply(this.commentID, this.replyID);
+          break;
+        default:
+          break;
+      }
     },
     alertCancel() {
       this.alert = false;
@@ -194,10 +208,20 @@ export default {
       }
     },
 
-    async deleteComment(commentID) {
-      console.log(commentID);
+    deleteCommentConfirm(commentID) {
+      this.commentID = commentID;
+      this.deleteType = "comment";
       this.alert = true;
-      /*
+    },
+
+    deleteReplyConfirm(commentID, replyID) {
+      this.commentID = commentID;
+      this.replyID = replyID;
+      this.deleteType = "reply";
+      this.alert = true;
+    },
+
+    async deleteComment(commentID) {
       try {
         const response = await ArticlesService.deleteComment(
           this.article._id,
@@ -207,7 +231,7 @@ export default {
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
-      }*/
+      }
     },
     async likeComment(commentID) {
       try {
