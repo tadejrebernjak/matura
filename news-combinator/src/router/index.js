@@ -10,6 +10,7 @@ import Liked from "../views/Liked.vue";
 import Today from "../views/Today.vue";
 import Admin from "../views/Admin.vue";
 import AdminArticles from "../views/AdminArticles.vue";
+import AdminUsers from "../views/AdminUsers.vue";
 
 const routes = [
   {
@@ -132,6 +133,19 @@ const routes = [
     path: "/admin/articles",
     name: "AdminArticles",
     component: AdminArticles,
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem("token")) {
+        return next({
+          name: "Login",
+        });
+      }
+      next();
+    },
+  },
+  {
+    path: "/admin/users",
+    name: "AdminUsers",
+    component: AdminUsers,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("token")) {
         return next({

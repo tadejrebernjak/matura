@@ -1,5 +1,6 @@
-let { Article, Rating, Visit } = require("../models/article");
-let User = require("../models/user");
+const ObjectId = require("mongoose").Types.ObjectId;
+const { Article } = require("../models/article");
+const User = require("../models/user");
 
 exports.toggleVisibility = async function (req, res) {
   if (!req.user.isAdmin) {
@@ -98,6 +99,64 @@ exports.deleteArticle = async function (req, res) {
 
   try {
     await Article.deleteOne({ _id: req.params.articleID });
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
+exports.getUsers = async function (req, res) {
+  if (!req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+
+  try {
+    const users = await User.find({}).sort({ username: "desc" });
+
+    res.send(users).status(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
+exports.searchUsers = async function (req, res) {
+  if (!req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+
+  const query = req.params.query;
+  const objID = new ObjectId(query.length < 12 ? "123456789012" : query);
+
+  try {
+    const users = await User.find({
+      $or: [
+        {
+          _id: objID,
+        },
+        {
+          username: { $regex: query, $options: "i" },
+        },
+        {
+          email: { $regex: query, $options: "i" },
+        },
+      ],
+    }).sort({ username: "desc" });
+
+    res.send(users);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.deleteUser = async function (req, res) {
+  if (!req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+
+  try {
+    await User.deleteOne({ _id: req.params.userID });
     return res.sendStatus(200);
   } catch (error) {
     console.log(error);

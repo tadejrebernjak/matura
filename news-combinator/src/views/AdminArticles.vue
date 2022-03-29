@@ -71,7 +71,9 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import AdminService from "../adminService";
+import router from "../router";
 import Paginator from "@/components/Paginator";
 import Searchbar from "@/components/Searchbar";
 import SourcesFilter from "@/components/SourcesFilter";
@@ -86,6 +88,13 @@ export default {
     SourcesFilter,
     OrderSelect,
     Alert,
+  },
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+      user: "auth/user",
+      isAdmin: "auth/isAdmin",
+    }),
   },
   data() {
     return {
@@ -259,12 +268,11 @@ export default {
     },
   },
   beforeMount() {
+    if (!this.isAdmin) {
+      router.push("/login");
+    }
+
     this.getArticles();
-  },
-  watch: {
-    "$route.params.category": function () {
-      this.getArticles();
-    },
   },
 };
 </script>

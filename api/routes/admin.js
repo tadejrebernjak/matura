@@ -22,6 +22,18 @@ router.get(
   admin_controller.searchArticles
 );
 
+router.get(
+  "/users",
+  users_controller.authenticateToken,
+  admin_controller.getUsers
+);
+
+router.get(
+  "/users/search/:query",
+  users_controller.authenticateToken,
+  admin_controller.searchUsers
+);
+
 router.post(
   "/articles/toggleVisibility/:articleID",
   users_controller.authenticateToken,
@@ -32,6 +44,12 @@ router.delete(
   "/articles/:articleID",
   users_controller.authenticateToken,
   admin_controller.deleteArticle
+);
+
+router.delete(
+  "/users/:userID",
+  users_controller.authenticateToken,
+  admin_controller.deleteUser
 );
 
 module.exports = router;

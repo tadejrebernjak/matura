@@ -42,6 +42,36 @@ class AdminService {
       return;
     }
   }
+
+  static async getUsers() {
+    try {
+      const response = await api.get("admin/users");
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      return;
+    }
+  }
+
+  static async searchUsers(query) {
+    try {
+      const response = await api.get("admin/users/search/" + query);
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      return;
+    }
+  }
+
+  static async deleteUser(userID) {
+    try {
+      await api.delete("admin/users/" + userID);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 export default AdminService;
