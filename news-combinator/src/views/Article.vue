@@ -92,6 +92,8 @@ export default {
     },
     alertCancel() {
       this.alert = false;
+      this.commentID = "";
+      this.replyID = "";
     },
     async getArticle(id) {
       try {

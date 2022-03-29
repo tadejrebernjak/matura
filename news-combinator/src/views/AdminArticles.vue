@@ -1,4 +1,8 @@
 <template>
+  <h1 class="text-3xl border-b border-gray-600 pb-4 mb-10">
+    <router-link to="/admin">Admin</router-link>
+    > <span class="text-green-600">Novice</span>
+  </h1>
   <Searchbar @search="search" />
   <SourcesFilter :toggledSources="toggledSources" @toggle="toggleSource" />
   <Paginator
@@ -23,12 +27,33 @@
       :article="article"
     >
       <td>{{ article.source }}</td>
-      <td>{{ article.title }}</td>
+      <td>
+        <router-link :to="'/article/' + article._id">{{
+          article.title
+        }}</router-link>
+      </td>
       <td class="text-center">
         <p>{{ article.date }}</p>
         <p class="font-bold">{{ article.time }}</p>
       </td>
-      <td><i class="far fa-eye"></i></td>
+      <td>
+        <div class="actions-container">
+          <span @click="toggleVisibility(article._id)">
+            <i v-if="!article.hidden" class="far fa-eye"></i>
+            <i v-else class="far fa-eye-slash"></i>
+            <div class="tooltip">
+              <p v-if="!article.hidden">Hide</p>
+              <p v-else>Unhide</p>
+            </div>
+          </span>
+          <span @click="deleteArticleConfirm(article._id)">
+            <i class="fas fa-trash"></i>
+            <div class="tooltip">
+              <p>Delete</p>
+            </div>
+          </span>
+        </div>
+      </td>
     </tr>
   </table>
   <Paginator
@@ -37,14 +62,21 @@
     :currentPage="currentPage"
     @changePage="changePage"
   />
+  <Alert
+    :text="'Želite izbrisati članek?'"
+    @ok="alertOK"
+    @cancel="alertCancel"
+    v-if="alert"
+  />
 </template>
 
 <script>
-import ArticlesService from "../articlesService";
+import AdminService from "../adminService";
 import Paginator from "@/components/Paginator";
 import Searchbar from "@/components/Searchbar";
 import SourcesFilter from "@/components/SourcesFilter";
 import OrderSelect from "@/components/OrderSelect";
+import Alert from "@/components/Alert";
 
 export default {
   name: "ArticlesList",
@@ -53,9 +85,11 @@ export default {
     Searchbar,
     SourcesFilter,
     OrderSelect,
+    Alert,
   },
   data() {
     return {
+      alert: false,
       articles: [],
       filteredArticles: [],
       shownArticles: [],
@@ -69,6 +103,7 @@ export default {
         SlovenskeNovice: true,
         list: ["24ur", "Delo", "Siol", "Slovenske Novice"],
       },
+      deleteID: "",
       error: "",
     };
   },
@@ -76,11 +111,10 @@ export default {
     async getArticles() {
       try {
         if (this.$route.params.category == "sport")
-          this.articles = await ArticlesService.getArticles("sport");
+          this.articles = await AdminService.getArticles("sport");
         else if (this.$route.params.category == "chronicle")
-          this.articles = await ArticlesService.getArticles("chronicle");
-        else this.articles = await ArticlesService.getArticles("all");
-        console.log("kronika");
+          this.articles = await AdminService.getArticles("chronicle");
+        else this.articles = await AdminService.getArticles("all");
         this.filterArticles();
 
         this.changePageArticles();
@@ -101,21 +135,18 @@ export default {
     async search(query) {
       if (query != "") {
         if (this.$route.params.category == "sport") {
-          this.articles = await ArticlesService.searchArticles(query, "sport");
+          this.articles = await AdminService.searchArticles(query, "sport");
         } else if (this.$route.params.category == "chronicle") {
-          this.articles = await ArticlesService.searchArticles(
-            query,
-            "chronicle"
-          );
+          this.articles = await AdminService.searchArticles(query, "chronicle");
         } else {
-          this.articles = await ArticlesService.searchArticles(query, "all");
+          this.articles = await AdminService.searchArticles(query, "all");
         }
       } else {
         if (this.$route.params.category == "sport")
-          this.articles = await ArticlesService.getArticles("sport");
+          this.articles = await AdminService.getArticles("sport");
         else if (this.$route.params.category == "chronicle")
-          this.articles = await ArticlesService.getArticles("chronicle");
-        else this.articles = await ArticlesService.getArticles("all");
+          this.articles = await AdminService.getArticles("chronicle");
+        else this.articles = await AdminService.getArticles("all");
       }
       this.filterArticles();
 
@@ -176,13 +207,11 @@ export default {
           this.filteredArticles.sort((a, b) =>
             b.timestamp > a.timestamp ? 1 : -1
           );
-          console.log("newest");
           break;
         case "oldest":
           this.filteredArticles.sort((a, b) =>
             a.timestamp > b.timestamp ? 1 : -1
           );
-          console.log("oldest");
           break;
         case "popular":
           this.filteredArticles.sort(
@@ -195,6 +224,37 @@ export default {
             b.timestamp > a.timestamp ? 1 : -1
           );
           break;
+      }
+    },
+    async toggleVisibility(articleID) {
+      try {
+        await AdminService.toggleVisibility(articleID);
+
+        this.getArticles();
+      } catch (error) {
+        this.error = error.message;
+      }
+    },
+    deleteArticleConfirm(articleID) {
+      this.deleteID = articleID;
+      this.alert = true;
+    },
+    alertOK() {
+      this.alert = false;
+
+      this.deleteArticle(this.deleteID);
+    },
+    alertCancel() {
+      this.alert = false;
+      this.deleteID = "";
+    },
+    async deleteArticle(articleID) {
+      try {
+        await AdminService.deleteArticle(articleID);
+
+        this.getArticles();
+      } catch (error) {
+        this.error = error.message;
       }
     },
   },
@@ -215,7 +275,7 @@ table {
 }
 
 th {
-  @apply bg-green-500 border border-gray-300 text-white font-semibold text-lg p-2 text-left;
+  @apply bg-green-500 border border-gray-300 text-white font-semibold text-lg p-2;
 }
 
 td {
@@ -224,5 +284,40 @@ td {
 
 tr:nth-child(even) {
   @apply bg-gray-100;
+}
+
+.source {
+  width: 10%;
+}
+
+.title {
+  width: 60%;
+}
+
+.datetime {
+  width: 15%;
+}
+
+.actions {
+  width: 15%;
+}
+
+.actions-container {
+  @apply flex justify-center flex-row;
+}
+
+td span {
+  @apply mx-2 relative cursor-pointer;
+}
+
+.tooltip {
+  @apply absolute bg-white border border-gray-400 rounded-md py-1 px-2 shadow-md font-semibold;
+  top: -40px;
+  left: -50%;
+  display: none;
+}
+
+td span:hover .tooltip {
+  display: block;
 }
 </style>

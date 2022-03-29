@@ -1,10 +1,10 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 
-var articles_controller = require("../controllers/articles");
-var comments_controller = require("../controllers/comments");
-var replies_controller = require("../controllers/replies");
-var users_controller = require("../controllers/users");
+const articles_controller = require("../controllers/articles");
+const comments_controller = require("../controllers/comments");
+const replies_controller = require("../controllers/replies");
+const users_controller = require("../controllers/users");
 
 // ARTICLES
 

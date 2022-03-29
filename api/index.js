@@ -15,6 +15,7 @@ db.once("open", () => console.log("Connected to db"));
 const scraperRouter = require("./routes/scraper");
 const articlesRouter = require("./routes/articles");
 const usersRouter = require("./routes/users");
+const adminRouter = require("./routes/admin");
 
 const port = 5000;
 
@@ -30,6 +31,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/scraper", scraperRouter);
 app.use("/articles", articlesRouter);
 app.use("/users", usersRouter);
+app.use("/admin", adminRouter);
 
 app.listen(port, () =>
   console.log(`Server listening on http://localhost:${port}`)

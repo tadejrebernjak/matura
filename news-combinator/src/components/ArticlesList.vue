@@ -70,7 +70,6 @@ export default {
         else if (this.$route.params.category == "chronicle")
           this.articles = await ArticlesService.getArticles("chronicle");
         else this.articles = await ArticlesService.getArticles("all");
-        console.log("kronika");
         this.filterArticles();
 
         this.changePageArticles();
@@ -166,13 +165,11 @@ export default {
           this.filteredArticles.sort((a, b) =>
             b.timestamp > a.timestamp ? 1 : -1
           );
-          console.log("newest");
           break;
         case "oldest":
           this.filteredArticles.sort((a, b) =>
             a.timestamp > b.timestamp ? 1 : -1
           );
-          console.log("oldest");
           break;
         case "popular":
           this.filteredArticles.sort(

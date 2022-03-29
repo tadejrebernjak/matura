@@ -8,17 +8,23 @@ exports.getArticles = async function (req, res) {
     if (req.params.category == "sport") {
       const categories = ["sport", "sportal", "Sportal"];
 
-      articles = await Article.find({ category: { $in: categories } }).sort({
+      articles = await Article.find({
+        category: { $in: categories },
+        hidden: false,
+      }).sort({
         timestamp: -1,
       });
     } else if (req.params.category == "chronicle") {
       const categories = ["kronika", "crna-kronika", "Črna kronika", "Kronika"];
 
-      articles = await Article.find({ category: { $in: categories } }).sort({
+      articles = await Article.find({
+        category: { $in: categories },
+        hidden: false,
+      }).sort({
         timestamp: -1,
       });
     } else {
-      articles = await Article.find({}).sort({ timestamp: -1 });
+      articles = await Article.find({ hidden: false }).sort({ timestamp: -1 });
     }
 
     res.send(articles);
@@ -39,6 +45,7 @@ exports.searchArticles = async function (req, res) {
       articles = await Article.find({
         title: { $regex: query, $options: "i" },
         category: { $in: categories },
+        hidden: false,
       }).sort({ timestamp: -1 });
     } else if (req.params.category == "chronicle") {
       const categories = ["kronika", "crna-kronika", "Črna kronika", "Kronika"];
@@ -46,10 +53,12 @@ exports.searchArticles = async function (req, res) {
       articles = await Article.find({
         title: { $regex: query, $options: "i" },
         category: { $in: categories },
+        hidden: false,
       }).sort({ timestamp: -1 });
     } else {
       articles = await Article.find({
         title: { $regex: query, $options: "i" },
+        hidden: false,
       }).sort({ timestamp: -1 });
     }
 
@@ -63,6 +72,7 @@ exports.getReadArticles = async function (req, res) {
   try {
     let articles = await Article.find({
       "clicks.userID": req.user._id,
+      hidden: false,
     });
     res.send(articles);
   } catch (error) {
@@ -74,6 +84,7 @@ exports.getLikedArticles = async function (req, res) {
   try {
     let articles = await Article.find({
       "likes.userID": req.user._id,
+      hidden: false,
     });
     res.send(articles);
   } catch (error) {
@@ -95,6 +106,7 @@ exports.getTodayArticles = async function (req, res) {
 
     let articles = await Article.find({
       timestamp: { $gte: startOfToday },
+      hidden: false,
     }).sort({ timestamp: -1 });
 
     res.send(articles);
