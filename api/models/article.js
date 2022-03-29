@@ -44,6 +44,10 @@ var ArticleSchema = new mongoose.Schema({
   summary: String,
   category: String,
   image: String,
+  hidden: {
+    type: Boolean,
+    default: false,
+  },
   comments: [CommentSchema],
   likes: [EntrySchema],
   dislikes: [EntrySchema],

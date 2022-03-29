@@ -9,7 +9,7 @@
   />
   <OrderSelect :order="order" @select="orderSelect" />
   <table class="table-fixed">
-    <tr>
+    <tr class="rounded-t-md">
       <th class="source">Source</th>
       <th class="title">Title</th>
       <th class="datetime">Date & Time</th>
@@ -24,7 +24,10 @@
     >
       <td>{{ article.source }}</td>
       <td>{{ article.title }}</td>
-      <td>{{ article.date + " " + article.time }}</td>
+      <td class="text-center">
+        <p>{{ article.date }}</p>
+        <p class="font-bold">{{ article.time }}</p>
+      </td>
       <td><i class="far fa-eye"></i></td>
     </tr>
   </table>
@@ -208,11 +211,11 @@ export default {
 
 <style scoped>
 table {
-  @apply my-5 rounded-sm;
+  @apply my-5 rounded-t-md;
 }
 
 th {
-  @apply bg-green-500 border border-green-500 text-white font-semibold text-lg p-1 text-left;
+  @apply bg-green-500 border border-gray-300 text-white font-semibold text-lg p-2 text-left;
 }
 
 td {
