@@ -125,6 +125,15 @@ class AdminService {
       return error;
     }
   }
+
+  static async updateArticles(type) {
+    try {
+      const response = await api.get("scraper/" + type);
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  }
 }
 
 export default AdminService;

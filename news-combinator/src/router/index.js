@@ -12,6 +12,7 @@ import Admin from "../views/Admin.vue";
 import AdminArticles from "../views/AdminArticles.vue";
 import AdminUsers from "../views/AdminUsers.vue";
 import AdminUserEdit from "../views/AdminUserEdit.vue";
+import AdminArticlesUpdate from "../views/AdminArticlesUpdate.vue";
 
 const routes = [
   {
@@ -160,6 +161,19 @@ const routes = [
     path: "/admin/user/:id",
     name: "AdminUserEdit",
     component: AdminUserEdit,
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem("token")) {
+        return next({
+          name: "Login",
+        });
+      }
+      next();
+    },
+  },
+  {
+    path: "/admin/articles/update",
+    name: "AdminArticlesUpdate",
+    component: AdminArticlesUpdate,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("token")) {
         return next({

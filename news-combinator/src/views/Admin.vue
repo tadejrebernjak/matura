@@ -16,10 +16,12 @@
       </div>
     </router-link>
 
-    <div class="action-card">
-      <i class="fas fa-plus"></i>
-      <h2>Posodobi novice</h2>
-    </div>
+    <router-link to="/admin/articles/update">
+      <div class="action-card">
+        <i class="fas fa-plus"></i>
+        <h2>Posodobi novice</h2>
+      </div>
+    </router-link>
   </div>
 </template>
 
