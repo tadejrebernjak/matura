@@ -1,12 +1,12 @@
 <template>
-  <div class="card">
-    <div class="card-header w-full">
-      <span v-if="article.image == 'https://siol.netundefined'">
-        <img class="card-image" :src="noImage" />
-      </span>
-      <span v-else>
-        <img class="card-image" :src="article.image" />
-      </span>
+  <router-link class="card" :to="'/article/' + article._id">
+    <div class="card-header">
+      <img
+        v-if="article.image == 'https://siol.netundefined'"
+        class="card-image"
+        :src="noImage"
+      />
+      <img v-else class="card-image" :src="article.image" />
       <div
         class="card-source"
         :class="{
@@ -30,12 +30,7 @@
         }}
       </p>
     </div>
-    <router-link :to="'/article/' + article._id">
-      <div class="card-overview">
-        <span class="overview-text">Preberi več</span>
-      </div>
-    </router-link>
-  </div>
+  </router-link>
 </template>
 
 <script>
@@ -56,7 +51,11 @@ export default {
 
 <style scoped>
 .card {
-  @apply w-full max-w-sm inline border border-gray-400 relative bg-gray-50 shadow-md;
+  @apply w-full max-w-sm inline border border-gray-400 relative bg-gray-50 hover:bg-gray-100 shadow-md transition-all duration-100;
+}
+
+.card:hover .card-image {
+  filter: brightness(95%);
 }
 
 .card-body {
@@ -64,12 +63,11 @@ export default {
 }
 
 .card-image {
-  width: 100%;
-  @apply object-cover max-h-36;
+  @apply w-full object-cover max-h-36 transition-all duration-100;
 }
 
 .card-source {
-  @apply absolute top-0 left-0 inline w-auto p-1 px-2 bg-green-500 font-bold text-white uppercase;
+  @apply absolute top-0 left-0 w-auto p-1 px-2 bg-green-500 font-bold text-white uppercase;
 }
 
 .stiriindvajsetur {
@@ -95,20 +93,5 @@ export default {
 
 .card-description {
   @apply text-sm text-gray-600;
-}
-
-.card-overview {
-  background-color: rgba(0, 0, 0, 0);
-  color: rgba(0, 0, 0, 0);
-  @apply absolute h-full w-full top-0 transition-all duration-300 cursor-pointer text-center;
-}
-.card-overview:hover {
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-}
-
-.overview-text {
-  @apply absolute top-1/2 font-bold text-xl;
-  transform: translate(-50%, -50%);
 }
 </style>

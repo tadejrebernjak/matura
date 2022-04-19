@@ -1,6 +1,8 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const { Article } = require("../models/article");
 const User = require("../models/user");
+const fs = require("fs");
+const { findByIdAndUpdate } = require("../models/user");
 
 exports.toggleVisibility = async function (req, res) {
   if (!req.user.isAdmin) {
@@ -112,9 +114,32 @@ exports.getUsers = async function (req, res) {
   }
 
   try {
-    const users = await User.find({}).sort({ username: "desc" });
+    const users = await User.find({
+      $or: [{ isAdmin: false }, { isAdmin: null }],
+    }).sort({
+      username: "desc",
+    });
 
     res.send(users).status(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
+exports.getUserById = async function (req, res) {
+  if (!req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+
+    if (user) {
+      res.send(user).status(200);
+    } else {
+      res.status(404);
+    }
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
@@ -131,16 +156,21 @@ exports.searchUsers = async function (req, res) {
 
   try {
     const users = await User.find({
-      $or: [
+      $and: [
         {
-          _id: objID,
+          $or: [
+            {
+              _id: objID,
+            },
+            {
+              username: { $regex: query, $options: "i" },
+            },
+            {
+              email: { $regex: query, $options: "i" },
+            },
+          ],
         },
-        {
-          username: { $regex: query, $options: "i" },
-        },
-        {
-          email: { $regex: query, $options: "i" },
-        },
+        { $or: [{ isAdmin: false }, { isAdmin: null }] },
       ],
     }).sort({ username: "desc" });
 
@@ -157,6 +187,109 @@ exports.deleteUser = async function (req, res) {
 
   try {
     await User.deleteOne({ _id: req.params.userID });
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
+exports.updateUser = async function (req, res) {
+  if (!req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+
+  const oldUser = await User.findOne({ _id: req.body.user._id });
+  if (!oldUser) {
+    return res.sendStatus(404);
+  }
+
+  const update = {
+    email: req.body.user.email,
+    username: req.body.user.username,
+  };
+
+  if (update.email != oldUser.email) {
+    User.countDocuments({ email: update.email }, async function (err, count) {
+      if (count > 0) {
+        error = true;
+        return res.status(400).send("Account with this email already exists.");
+      } else {
+        try {
+          await User.findOneAndUpdate({ _id: req.user._id }, update);
+
+          return res.sendStatus(200);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+  } else {
+    try {
+      await User.findOneAndUpdate({ _id: req.body.user._id }, update);
+
+      return res.sendStatus(200);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
+exports.removePfp = async function (req, res) {
+  if (!req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+
+  const user = await User.findOne({ _id: req.params.userID });
+
+  if (!user) {
+    return res.sendStatus(404);
+  }
+
+  const pathSplit = user.pfp.split("/");
+  const fileDeletePath = "./" + pathSplit[3] + "/" + pathSplit[4];
+  fs.unlinkSync(fileDeletePath);
+
+  try {
+    await User.updateOne({ _id: req.params.userID }, { pfp: null });
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
+exports.muteUser = async function (req, res) {
+  if (!req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+
+  const muteDate = new Date();
+  muteDate.setDate(muteDate.getDate() + req.body.muteDays);
+
+  const update = {
+    muteExpiration: muteDate,
+  };
+
+  try {
+    await User.updateOne({ _id: req.body.userID }, update);
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
+exports.unmuteUser = async function (req, res) {
+  if (!req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+
+  const update = {
+    muteExpiration: null,
+  };
+
+  try {
+    await User.updateOne({ _id: req.body.userID }, update);
     return res.sendStatus(200);
   } catch (error) {
     console.log(error);

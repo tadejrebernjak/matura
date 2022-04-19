@@ -36,6 +36,14 @@
       </td>
       <td>
         <div class="actions-container">
+          <span>
+            <router-link :to="'/admin/user/' + user._id">
+              <i class="fas fa-pen"></i>
+              <div class="tooltip">
+                <p>Edit</p>
+              </div>
+            </router-link>
+          </span>
           <span @click="deleteUserConfirm(user._id)">
             <i class="fas fa-trash"></i>
             <div class="tooltip">

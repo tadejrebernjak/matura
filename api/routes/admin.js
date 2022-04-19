@@ -29,6 +29,12 @@ router.get(
 );
 
 router.get(
+  "/user/:id",
+  users_controller.authenticateToken,
+  admin_controller.getUserById
+);
+
+router.get(
   "/users/search/:query",
   users_controller.authenticateToken,
   admin_controller.searchUsers
@@ -50,6 +56,30 @@ router.delete(
   "/users/:userID",
   users_controller.authenticateToken,
   admin_controller.deleteUser
+);
+
+router.put(
+  "/user",
+  users_controller.authenticateToken,
+  admin_controller.updateUser
+);
+
+router.delete(
+  "/user/pfp/:userID",
+  users_controller.authenticateToken,
+  admin_controller.removePfp
+);
+
+router.post(
+  "/user/mute",
+  users_controller.authenticateToken,
+  admin_controller.muteUser
+);
+
+router.post(
+  "/user/unmute",
+  users_controller.authenticateToken,
+  admin_controller.unmuteUser
 );
 
 module.exports = router;

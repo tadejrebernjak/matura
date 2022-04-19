@@ -13,6 +13,10 @@ var UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  muteExpiration: {
+    type: Date,
+    default: null,
+  },
   createdAt: {
     type: Date,
     immutable: true,

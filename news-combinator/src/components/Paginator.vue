@@ -1,6 +1,6 @@
 <template>
   <div class="paginator">
-    <button class="first" @click="previousPage">&lt;</button>
+    <button @click="previousPage">&lt;</button>
     <div v-for="(page, index) in buttons" :item="page" :key="index">
       <button
         :class="{ selected: page.selected, first: page.first, last: page.last }"
@@ -9,7 +9,7 @@
         {{ page.page }}
       </button>
     </div>
-    <button class="last" @click="nextPage">></button>
+    <button @click="nextPage">></button>
   </div>
 </template>
 
@@ -81,24 +81,17 @@ export default {
 }
 
 button {
-  @apply p-1 px-3 mx-1 rounded-sm font-semibold text-white bg-gray-400;
+  @apply p-1 w-14 font-semibold text-gray-600 bg-gradient-to-b from-gray-100 hover:from-gray-200 to-gray-200 border border-gray-400;
+  margin-left: -1px;
 }
 
 button.selected {
-  @apply bg-green-500;
-}
-
-button.first {
-  @apply mr-3;
+  @apply from-green-400 to-green-500 text-white;
 }
 
 button.first::after {
   content: "...";
   position: absolute;
   left: -2px;
-}
-
-button.last {
-  @apply ml-3;
 }
 </style>
