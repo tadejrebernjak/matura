@@ -148,6 +148,7 @@ export default {
       saved: false,
     };
   },
+  emits: ["notify"],
   computed: {
     ...mapGetters({
       authenticated: "auth/authenticated",
@@ -231,15 +232,18 @@ export default {
             this.password
           );
           if (response.status !== 200) {
-            this.error = response.data;
+            this.$emit("notify", {
+              type: "error",
+              message: response.data,
+            });
           } else {
             await this.saveToken(response.data.accessToken);
             this.password = "";
             this.error = "";
-            this.saved = true;
-            setTimeout(() => {
-              this.saved = false;
-            }, 5000);
+            this.$emit("notify", {
+              type: "success",
+              message: "Profil je bil posodobljen",
+            });
           }
         } catch (error) {
           this.error = error.message;
@@ -284,8 +288,15 @@ export default {
           this.pfpFile = null;
           this.pfpFileName = null;
           await this.saveToken(response.data.accessToken);
+          this.$emit("notify", {
+            type: "success",
+            message: "Profilna slika spremenjena",
+          });
         } catch (error) {
-          this.pfpError = error;
+          this.$emit("notify", {
+            type: "error",
+            message: error,
+          });
         }
       }
     },

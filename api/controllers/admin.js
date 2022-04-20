@@ -138,11 +138,10 @@ exports.getUserById = async function (req, res) {
     if (user) {
       res.send(user).status(200);
     } else {
-      res.status(404);
+      res.status(404).send("Ne najdem uporabnika");
     }
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
   }
 };
 

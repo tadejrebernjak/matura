@@ -59,6 +59,7 @@ export default {
       user: "auth/user",
     }),
   },
+  emits: ["notify"],
   methods: {
     async getArticles() {
       try {

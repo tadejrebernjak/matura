@@ -89,6 +89,7 @@ export default {
     OrderSelect,
     Alert,
   },
+  emits: ["notify"],
   computed: {
     ...mapGetters({
       authenticated: "auth/authenticated",
@@ -240,6 +241,10 @@ export default {
         await AdminService.toggleVisibility(articleID);
 
         this.getArticles();
+        this.$emit("notify", {
+          type: "success",
+          message: "Vidnost članka je bila spremenjena",
+        });
       } catch (error) {
         this.error = error.message;
       }
@@ -262,6 +267,10 @@ export default {
         await AdminService.deleteArticle(articleID);
 
         this.getArticles();
+        this.$emit("notify", {
+          type: "success",
+          message: "Članek je bil izbrisan",
+        });
       } catch (error) {
         this.error = error.message;
       }

@@ -201,6 +201,7 @@ export default {
   watch: {
     "$route.params.category": function () {
       this.getArticles();
+      this.changePage(1);
     },
   },
 };

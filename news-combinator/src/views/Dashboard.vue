@@ -54,6 +54,7 @@ import { mapGetters } from "vuex";
 export default {
   name: "Dashboard",
   components: {},
+  emits: ["notify"],
   computed: {
     ...mapGetters({
       authenticated: "auth/authenticated",

@@ -42,6 +42,7 @@ export default {
     Paginator,
     Searchbar,
   },
+  emits: ["notify"],
   data() {
     return {
       articles: [],

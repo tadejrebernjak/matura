@@ -49,6 +49,7 @@ export default {
     CommentsFeed,
     Alert,
   },
+  emits: ["notify"],
   data() {
     return {
       alert: false,
@@ -130,7 +131,10 @@ export default {
           await ArticlesService.visitArticle(this.article._id);
           this.counters.clicks++;
         } catch (error) {
-          console.log(error);
+          this.$emit("notify", {
+            type: "error",
+            message: error,
+          });
         }
       }
     },
@@ -185,8 +189,15 @@ export default {
         try {
           await ArticlesService.addComment(this.article._id, newComment);
           this.getArticle(this.$route.params.id);
+          this.$emit("notify", {
+            type: "success",
+            message: "Komentar je bil dodan",
+          });
         } catch (error) {
-          console.log(error);
+          this.$emit("notify", {
+            type: "error",
+            message: error,
+          });
         }
       }
     },
@@ -197,8 +208,15 @@ export default {
         try {
           await ArticlesService.editComment(commentID, editBody);
           this.getArticle(this.$route.params.id);
+          this.$emit("notify", {
+            type: "success",
+            message: "Komentar je bil urejen",
+          });
         } catch (error) {
-          console.log(error);
+          this.$emit("notify", {
+            type: "error",
+            message: error,
+          });
         }
       }
     },
@@ -220,8 +238,15 @@ export default {
       try {
         await ArticlesService.deleteComment(this.article._id, commentID);
         this.getArticle(this.$route.params.id);
+        this.$emit("notify", {
+          type: "success",
+          message: "Komentar je bil izbrisan",
+        });
       } catch (error) {
-        console.log(error);
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
     async likeComment(commentID) {
@@ -229,7 +254,10 @@ export default {
         await ArticlesService.rateComment(commentID, "like");
         this.getArticle(this.$route.params.id);
       } catch (error) {
-        console.log(error);
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
     async dislikeComment(commentID) {
@@ -237,7 +265,10 @@ export default {
         await ArticlesService.rateComment(commentID, "dislike");
         this.getArticle(this.$route.params.id);
       } catch (error) {
-        console.log(error);
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
     async addReply(newReply, commentID) {
@@ -245,8 +276,15 @@ export default {
         await ArticlesService.addReply(commentID, newReply);
 
         this.getArticle(this.$route.params.id);
+        this.$emit("notify", {
+          type: "success",
+          message: "Odziv je bil dodan",
+        });
       } catch (error) {
-        console.log(error);
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
 
@@ -254,8 +292,15 @@ export default {
       try {
         await ArticlesService.editCommentReply(replyID, editBody);
         this.getArticle(this.$route.params.id);
+        this.$emit("notify", {
+          type: "success",
+          message: "Odziv je bil urejen",
+        });
       } catch (error) {
-        console.log(error);
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
 
@@ -263,8 +308,15 @@ export default {
       try {
         await ArticlesService.deleteCommentReply(commentID, replyID);
         this.getArticle(this.$route.params.id);
+        this.$emit("notify", {
+          type: "success",
+          message: "Odziv je bil izbrisan",
+        });
       } catch (error) {
-        console.log(error);
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
     async likeReply(replyID) {
@@ -272,7 +324,10 @@ export default {
         await ArticlesService.rateCommentReply(replyID, "like");
         this.getArticle(this.$route.params.id);
       } catch (error) {
-        console.log(error);
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
     async dislikeReply(replyID) {
@@ -280,7 +335,10 @@ export default {
         await ArticlesService.rateCommentReply(replyID, "dislike");
         this.getArticle(this.$route.params.id);
       } catch (error) {
-        console.log(error);
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
   },

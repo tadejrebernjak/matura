@@ -125,6 +125,7 @@ export default {
       isAdmin: "auth/isAdmin",
     }),
   },
+  emits: ["notify"],
   data() {
     return {
       editUser: {},
@@ -138,13 +139,24 @@ export default {
   methods: {
     async getUser(id) {
       try {
-        this.editUser = await AdminService.getUser(id);
+        const response = await AdminService.getUser(id);
 
+        if (response.data) {
+          this.editUser = response.data;
+        } else {
+          this.$emit("notify", {
+            type: "error",
+            message: response,
+          });
+        }
         if (this.editUser.muteExpiration) {
           this.mutedString = moment(this.editUser.muteExpiration).format("LLL");
         }
       } catch (error) {
-        this.error = error.message;
+        this.$emit("notify", {
+          type: "error",
+          message: error,
+        });
       }
     },
     copyID(id) {
@@ -159,12 +171,21 @@ export default {
         });
 
         if (response.status == 200) {
-          this.notice = "Uporabnik posodobljen";
+          this.$emit("notify", {
+            type: "success",
+            message: "Uporabnik je bil posodobljen",
+          });
         } else {
-          this.error = response;
+          this.$emit("notify", {
+            type: "error",
+            message: response,
+          });
         }
       } catch (error) {
-        this.error = error.message;
+        this.$emit("notify", {
+          type: "error",
+          message: error.message,
+        });
       }
     },
 
@@ -173,8 +194,15 @@ export default {
         await AdminService.removePfp(this.editUser._id);
         this.editUser.pfp = null;
         this.getUser(this.$route.params.id);
+        this.$emit("notify", {
+          type: "success",
+          message: "Profilna slika odstranjena",
+        });
       } catch (error) {
-        this.error = error.message;
+        this.$emit("notify", {
+          type: "error",
+          message: error.message,
+        });
       }
     },
 
@@ -183,8 +211,15 @@ export default {
         await AdminService.muteUser(this.editUser._id, this.muteDays);
         this.muteDays = null;
         this.getUser(this.$route.params.id);
+        this.$emit("notify", {
+          type: "success",
+          message: "Muted",
+        });
       } catch (error) {
-        this.error = error.message;
+        this.$emit("notify", {
+          type: "error",
+          message: error.message,
+        });
       }
     },
 
@@ -193,8 +228,15 @@ export default {
         await AdminService.unmuteUser(this.editUser._id);
         this.muteDays = null;
         this.getUser(this.$route.params.id);
+        this.$emit("notify", {
+          type: "success",
+          message: "Unmuted",
+        });
       } catch (error) {
-        this.error = error.message;
+        this.$emit("notify", {
+          type: "error",
+          message: error.message,
+        });
       }
     },
   },

@@ -86,6 +86,7 @@ export default {
     OrderSelect,
     Alert,
   },
+  emits: ["notify"],
   computed: {
     ...mapGetters({
       authenticated: "auth/authenticated",
@@ -173,6 +174,10 @@ export default {
         await AdminService.deleteUser(userID);
 
         this.getUsers();
+        this.$emit("notify", {
+          type: "success",
+          message: "Izbrisal uporabnika",
+        });
       } catch (error) {
         this.error = error.message;
       }

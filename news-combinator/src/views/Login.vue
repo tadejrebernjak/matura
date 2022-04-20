@@ -65,6 +65,7 @@ export default {
       loginResponse: "",
     };
   },
+  emits: ["notify"],
   methods: {
     ...mapActions({
       saveToken: "auth/saveToken",
@@ -77,10 +78,17 @@ export default {
           this.password
         );
         if (response.status !== 200) {
-          this.loginResponse = response.data;
+          this.$emit("notify", {
+            type: "error",
+            message: response.data,
+          });
         } else {
           await this.saveToken(response.data.accessToken);
           router.push("/dashboard");
+          this.$emit("notify", {
+            type: "success",
+            message: "Prijava uspešna",
+          });
         }
       }
     },

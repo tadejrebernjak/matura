@@ -1,11 +1,7 @@
 <template>
   <router-link class="card" :to="'/article/' + article._id">
     <div class="card-header">
-      <img
-        v-if="article.image == 'https://siol.netundefined'"
-        class="card-image"
-        :src="noImage"
-      />
+      <img v-if="article.image == null" class="card-image" :src="noImage" />
       <img v-else class="card-image" :src="article.image" />
       <div
         class="card-source"

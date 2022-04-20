@@ -108,6 +108,7 @@ import router from "../router";
 export default {
   name: "Register",
   components: {},
+  emits: ["notify"],
   data() {
     return {
       email: "",
@@ -202,8 +203,19 @@ export default {
           );
           if (response.status === 201) {
             router.push("/login");
+            this.$emit("notify", {
+              type: "success",
+              message: "Račun uspešno registriran",
+            });
           } else {
             this.error = response;
+            setTimeout(() => {
+              this.error = "";
+            }, 5000);
+            this.$emit("notify", {
+              type: "error",
+              message: response,
+            });
           }
         } catch (error) {
           this.error = error.message;

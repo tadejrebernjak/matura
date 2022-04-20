@@ -32,6 +32,7 @@ import router from "../router";
 export default {
   name: "Admin",
   components: {},
+  emits: ["notify"],
   computed: {
     ...mapGetters({
       authenticated: "auth/authenticated",

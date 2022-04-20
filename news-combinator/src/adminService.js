@@ -57,9 +57,8 @@ class AdminService {
   static async getUser(id) {
     try {
       const response = await api.get("admin/user/" + id);
-      const data = response.data;
 
-      return data;
+      return response;
     } catch (error) {
       return error;
     }

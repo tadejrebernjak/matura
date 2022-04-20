@@ -129,11 +129,16 @@ exports.scrapeDelo = async function () {
       const article = articles[i];
       const articleResponse = await axios(article.url);
       const $ = cheerio.load(articleResponse.data);
-      const image =
-        (await "https://") +
-        extractHostname(article.url) +
-        $(".article__img_tag").attr("src");
-      article.image = image;
+      let image;
+      if ($(".article__img_tag").attr("src") != undefined) {
+        image =
+          (await "https://") +
+          extractHostname(article.url) +
+          $(".article__img_tag").attr("src");
+        article.image = image;
+      } else {
+        image = null;
+      }
     }
     return articles;
   } catch (error) {
@@ -187,9 +192,14 @@ exports.scrapeSiol = async function () {
       const article = articles[i];
       const articleResponse = await axios(article.url);
       const $ = cheerio.load(articleResponse.data);
-      const image =
-        (await provider.baseUrl) +
-        $(".article__figure").find("img").attr("src");
+      let image;
+      if ($(".article__figure").find("img").attr("src") != undefined) {
+        image =
+          (await provider.baseUrl) +
+          $(".article__figure").find("img").attr("src");
+      } else {
+        image = null;
+      }
       article.image = image;
     }
 

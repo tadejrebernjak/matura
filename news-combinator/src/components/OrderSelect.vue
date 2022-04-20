@@ -63,6 +63,18 @@ export default {
 .dropdown-content {
   position: absolute;
   @apply shadow-md z-50;
+  max-height: 1000px;
+  animation: 1s ease-in-out dropDown;
+  overflow: hidden;
+}
+
+@keyframes dropDown {
+  0% {
+    max-height: 0px;
+  }
+  100% {
+    max-height: 1000px;
+  }
 }
 
 .options {

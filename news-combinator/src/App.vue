@@ -1,7 +1,10 @@
 <template>
   <Header />
-  <div class="container max-w-4xl mx-auto p-2 my-8" :class="{ fading: fade }">
-    <router-view />
+  <div class="relative overflow-hidden">
+    <Notifications :notifications="notifications" />
+    <div class="container max-w-4xl mx-auto p-2 my-8" :class="{ fading: fade }">
+      <router-view @notify="addNotification" />
+    </div>
   </div>
   <button
     class="up-button fixed items-center justify-center text-xl bottom-5 right-5 z-50 w-8 h-8 text-gray-200 bg-green-400 hover:bg-green-500 border border-green-600 rounded-lg"
@@ -15,15 +18,18 @@
 <script>
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Notifications from "@/components/Notifications";
 
 export default {
   components: {
     Header,
     Footer,
+    Notifications,
   },
   data() {
     return {
       fade: false,
+      notifications: [],
     };
   },
   methods: {
@@ -31,10 +37,26 @@ export default {
       window.scroll({ top: 0, behavior: "smooth" });
     },
     fadeContent() {
+      this.fade = false;
       this.fade = true;
       setTimeout(() => {
         this.fade = false;
       }, 1000);
+    },
+    addNotification(notification) {
+      const newNotification = {
+        type: notification.type,
+        message: notification.message,
+        createdAt: Date.now(),
+      };
+
+      this.notifications.push(newNotification);
+
+      setTimeout(() => {
+        const index = this.notifications.indexOf(newNotification);
+
+        this.notifications.splice(index, 1);
+      }, 5000);
     },
   },
   watch: {

@@ -48,6 +48,7 @@ const loadingGif = require("../assets/loading.gif");
 export default {
   name: "AdminArticlesUpdate",
   components: {},
+  emits: ["notify"],
   computed: {
     ...mapGetters({
       authenticated: "auth/authenticated",
@@ -72,6 +73,10 @@ export default {
       this.loading = true;
       try {
         this.newArticles = await AdminService.updateArticles(type);
+        this.$emit("notify", {
+          type: "success",
+          message: "Članki so bili dodani",
+        });
       } catch (error) {
         this.error = error.message;
       }
