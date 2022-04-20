@@ -42,7 +42,7 @@
         @change="authenticatePfp"
       />
     </div>
-    <div class="w-3/5">
+    <div class="w-3/5 mb-7">
       <div class="form-control">
         <label for="email">E-Pošta</label>
         <div class="input-container" :class="{ borderRed: emailError }">
@@ -118,6 +118,7 @@
           </button>
         </router-link>
       </div>
+      <p class="saved-notice" v-if="saved">Spremembe so bile shranjene</p>
     </div>
   </div>
 </template>
@@ -144,6 +145,7 @@ export default {
       pfpError: "",
       formInvalid: true,
       error: "",
+      saved: false,
     };
   },
   computed: {
@@ -232,6 +234,12 @@ export default {
             this.error = response.data;
           } else {
             await this.saveToken(response.data.accessToken);
+            this.password = "";
+            this.error = "";
+            this.saved = true;
+            setTimeout(() => {
+              this.saved = false;
+            }, 5000);
           }
         } catch (error) {
           this.error = error.message;
@@ -308,7 +316,7 @@ input {
 }
 
 .error {
-  @apply text-red-600 mt-2;
+  @apply text-red-600 mt-2 font-semibold;
 }
 
 .backgroundRed {
@@ -317,5 +325,27 @@ input {
 
 .borderRed {
   @apply border-red-500 focus:border-red-500;
+}
+
+.saved-notice {
+  @apply text-center text-green-400 font-semibold text-lg opacity-0;
+  animation: 5s linear savedNotice;
+}
+
+@keyframes savedNotice {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  10% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <Header />
-  <div class="container max-w-4xl mx-auto p-2 my-8">
+  <div class="container max-w-4xl mx-auto p-2 my-8" :class="{ fading: fade }">
     <router-view />
   </div>
   <button
@@ -21,9 +21,25 @@ export default {
     Header,
     Footer,
   },
+  data() {
+    return {
+      fade: false,
+    };
+  },
   methods: {
     scrollUp() {
       window.scroll({ top: 0, behavior: "smooth" });
+    },
+    fadeContent() {
+      this.fade = true;
+      setTimeout(() => {
+        this.fade = false;
+      }, 1000);
+    },
+  },
+  watch: {
+    $route: function () {
+      this.fadeContent();
     },
   },
 };
@@ -42,6 +58,22 @@ export default {
 @media only screen and (max-width: 1000px) {
   .up-button {
     display: none;
+  }
+}
+
+.fading {
+  animation: 700ms ease-in-out fadeInOut;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 100;
+  }
+  1% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100;
   }
 }
 </style>

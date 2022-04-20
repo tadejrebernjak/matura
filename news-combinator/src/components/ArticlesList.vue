@@ -10,6 +10,7 @@
   <OrderSelect :order="order" @select="orderSelect" />
   <div
     class="grid mt-5 md:grid-cols-3 sm:grid-cols-2 gap-4 grid-flow-row place-content-center"
+    :class="{ animating: animating }"
   >
     <NewsCardThin
       v-for="(article, index) in shownArticles"
@@ -47,6 +48,7 @@ export default {
   data() {
     return {
       articles: [],
+      animating: false,
       filteredArticles: [],
       shownArticles: [],
       pages: 10,
@@ -80,12 +82,14 @@ export default {
     changePage(newPage) {
       this.currentPage = newPage;
       this.changePageArticles();
+      this.fadeList();
     },
     changePageArticles() {
       this.shownArticles = this.filteredArticles.slice(
         (this.currentPage - 1) * 30,
         this.currentPage * 30
       );
+      this.fadeList();
     },
     async search(query) {
       if (query != "") {
@@ -184,6 +188,12 @@ export default {
           break;
       }
     },
+    fadeList() {
+      this.animating = true;
+      setTimeout(() => {
+        this.animating = false;
+      }, 1000);
+    },
   },
   beforeMount() {
     this.getArticles();
@@ -195,3 +205,21 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.animating {
+  animation: 1s ease-in-out fadeInOut;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 100;
+  }
+  1% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100;
+  }
+}
+</style>

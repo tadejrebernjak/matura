@@ -13,7 +13,9 @@
     :currentPage="currentPage"
     @changePage="changePage"
   />
-  <ArticlesListToday :articles="shownArticles" />
+  <div :class="{ animating: animating }">
+    <ArticlesListToday :articles="shownArticles" />
+  </div>
   <Paginator
     v-if="pages > 1"
     :pages="pages"
@@ -48,6 +50,7 @@ export default {
       pages: 10,
       currentPage: 1,
       error: "",
+      animating: false,
     };
   },
   computed: {
@@ -71,12 +74,14 @@ export default {
     changePage(newPage) {
       this.currentPage = newPage;
       this.changePageArticles();
+      this.fadeList();
     },
     changePageArticles() {
       this.shownArticles = this.queriedArticles.slice(
         (this.currentPage - 1) * 10,
         this.currentPage * 10
       );
+      this.fadeList();
     },
     search(query) {
       if (query != "") {
@@ -90,9 +95,33 @@ export default {
 
       this.changePageArticles();
     },
+    fadeList() {
+      this.animating = true;
+      setTimeout(() => {
+        this.animating = false;
+      }, 1000);
+    },
   },
   beforeMount() {
     this.getArticles();
   },
 };
 </script>
+
+<style scoped>
+.animating {
+  animation: 1s ease-in-out fadeInOut;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 100;
+  }
+  1% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100;
+  }
+}
+</style>

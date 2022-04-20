@@ -30,6 +30,26 @@
         }}
       </p>
     </div>
+    <div class="card-foot">
+      <div class="visits">
+        <i class="far fa-hand-pointer details-icon"></i>
+        <p>{{ article.clicks.length }}</p>
+      </div>
+      <div class="comments">
+        <a href="#commentsFeed">
+          <i class="far fa-comment details-icon"></i>
+          <p>{{ article.comments.length }}</p>
+        </a>
+      </div>
+      <div class="likes">
+        <i class="far fa-thumbs-up details-icon"></i>
+        <p>{{ article.likes.length }}</p>
+      </div>
+      <div class="dislikes">
+        <i class="far fa-thumbs-down details-icon"></i>
+        <p>{{ article.dislikes.length }}</p>
+      </div>
+    </div>
   </router-link>
 </template>
 
@@ -51,11 +71,11 @@ export default {
 
 <style scoped>
 .card {
-  @apply w-full max-w-sm inline border border-gray-400 relative bg-gray-50 hover:bg-gray-100 shadow-md transition-all duration-100;
+  @apply w-full pb-10 max-w-sm inline border border-gray-400 relative bg-gray-50 hover:bg-gray-200 shadow-md transition-all duration-150;
 }
 
 .card:hover .card-image {
-  filter: brightness(95%);
+  filter: brightness(90%);
 }
 
 .card-body {
@@ -63,7 +83,7 @@ export default {
 }
 
 .card-image {
-  @apply w-full object-cover max-h-36 transition-all duration-100;
+  @apply w-full object-cover max-h-36 transition-all duration-150;
 }
 
 .card-source {
@@ -93,5 +113,21 @@ export default {
 
 .card-description {
   @apply text-sm text-gray-600;
+}
+
+.card:hover .card-foot {
+  @apply bg-gray-300;
+}
+
+.card-foot {
+  @apply absolute flex flex-wrap justify-between bottom-0 w-full p-2 text-gray-600 font-semibold bg-gray-100 border-t border-gray-300 transition-all duration-150;
+}
+
+.card-foot div {
+  @apply mx-3;
+}
+
+.card-foot div p {
+  @apply inline ml-2;
 }
 </style>
