@@ -8,7 +8,10 @@
         <div>
           <router-link
             v-if="
-              user.isAdmin && reply.user._id != user._id && !reply.user.isAdmin
+              authenticated &&
+              user.isAdmin &&
+              reply.user._id != user._id &&
+              !reply.user.isAdmin
             "
             :to="'/admin/user/' + reply.user._id"
           >
@@ -119,9 +122,12 @@ export default {
   },
   methods: {
     checkRating() {
-      if (this.reply.likes.includes(this.user._id)) {
+      if (this.authenticated && this.reply.likes.includes(this.user._id)) {
         return "liked";
-      } else if (this.reply.dislikes.includes(this.user._id)) {
+      } else if (
+        this.authenticated &&
+        this.reply.dislikes.includes(this.user._id)
+      ) {
         return "disliked";
       } else {
         return "";

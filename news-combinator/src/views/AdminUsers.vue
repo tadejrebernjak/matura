@@ -62,9 +62,9 @@
   />
   <Alert
     :text="'Želite zavedno izbrisati uporabnika?'"
+    :open="alert"
     @ok="alertOK"
     @cancel="alertCancel"
-    v-if="alert"
   />
 </template>
 

@@ -28,15 +28,12 @@ export default {
   props: {
     notifications: Array,
   },
-  data() {
-    return {};
-  },
 };
 </script>
 
 <style scoped>
 .notifications-container {
-  @apply fixed right-0 bottom-20 z-50;
+  @apply fixed right-0 top-20 z-50;
 }
 
 .notification {

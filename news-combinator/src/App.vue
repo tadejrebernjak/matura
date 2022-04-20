@@ -1,5 +1,6 @@
 <template>
-  <Header />
+  <Menu @closeMenu="closeMenu" :open="menu" />
+  <Header @openMenu="openMenu" />
   <div class="relative overflow-hidden">
     <Notifications :notifications="notifications" />
     <div class="container max-w-4xl mx-auto p-2 my-8" :class="{ fading: fade }">
@@ -19,16 +20,19 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Notifications from "@/components/Notifications";
+import Menu from "@/components/Menu";
 
 export default {
   components: {
     Header,
     Footer,
     Notifications,
+    Menu,
   },
   data() {
     return {
       fade: false,
+      menu: false,
       notifications: [],
     };
   },
@@ -58,6 +62,12 @@ export default {
         this.notifications.splice(index, 1);
       }, 5000);
     },
+    openMenu() {
+      this.menu = true;
+    },
+    closeMenu() {
+      this.menu = false;
+    },
   },
   watch: {
     $route: function () {
@@ -68,6 +78,18 @@ export default {
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Fira+Sans&family=Nunito+Sans&display=swap");
+
+* {
+  font-family: "Nunito Sans", sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Fira Sans", sans-serif;
+}
+
 #app {
   padding-bottom: 125px;
   @apply min-h-screen relative;

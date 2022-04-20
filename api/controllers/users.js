@@ -58,14 +58,36 @@ exports.updateUser = async function (req, res) {
 
   try {
     if (await bcrypt.compare(req.body.password, req.user.password)) {
-      try {
-        await User.findOneAndUpdate({ _id: req.user._id }, update);
+      if (req.user.email != req.body.email) {
+        User.countDocuments(
+          { email: req.body.email },
+          async function (err, count) {
+            if (count > 0) {
+              error = true;
+              return res.status(400).send("E-Pošta je že uporabljena");
+            } else {
+              try {
+                await User.findOneAndUpdate({ _id: req.user._id }, update);
 
-        const newUser = await User.findOne({ _id: req.user._id });
-        signToken(res, newUser);
-      } catch (error) {
-        console.log(error);
-        res.status(500).send("Napaka v strežniku");
+                const newUser = await User.findOne({ _id: req.user._id });
+                signToken(res, newUser);
+              } catch (error) {
+                console.log(error);
+                res.status(500).send("Napaka v strežniku");
+              }
+            }
+          }
+        );
+      } else {
+        try {
+          await User.findOneAndUpdate({ _id: req.user._id }, update);
+
+          const newUser = await User.findOne({ _id: req.user._id });
+          signToken(res, newUser);
+        } catch (error) {
+          console.log(error);
+          res.status(500).send("Napaka v strežniku");
+        }
       }
     } else {
       return res.status(400).send("Napačno geslo");

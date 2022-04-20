@@ -64,9 +64,9 @@
   />
   <Alert
     :text="'Želite izbrisati članek?'"
+    :open="alert"
     @ok="alertOK"
     @cancel="alertCancel"
-    v-if="alert"
   />
 </template>
 

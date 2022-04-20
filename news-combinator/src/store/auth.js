@@ -54,15 +54,21 @@ export default {
     },
 
     async tryToken({ commit }) {
+      if (!localStorage.getItem("token")) {
+        return;
+      }
+
       try {
         let response = await api.post("users/token");
 
         commit("SET_TOKEN", localStorage.getItem("token"));
         commit("SET_USER", response.data);
       } catch (error) {
-        localStorage.removeItem("token");
-        commit("SET_USER", null);
-        commit("SET_TOKEN", null);
+        if (error.response.status == 403) {
+          localStorage.removeItem("token");
+          commit("SET_USER", null);
+          commit("SET_TOKEN", null);
+        }
       }
     },
 

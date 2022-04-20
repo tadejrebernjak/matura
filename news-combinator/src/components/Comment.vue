@@ -8,6 +8,7 @@
         <div>
           <router-link
             v-if="
+              authenticated &&
               user.isAdmin &&
               comment.user._id != user._id &&
               !comment.user.isAdmin
@@ -184,9 +185,12 @@ export default {
   },
   methods: {
     checkRating() {
-      if (this.comment.likes.includes(this.user._id)) {
+      if (this.authenticated && this.comment.likes.includes(this.user._id)) {
         return "liked";
-      } else if (this.comment.dislikes.includes(this.user._id)) {
+      } else if (
+        this.authenticated &&
+        this.comment.dislikes.includes(this.user._id)
+      ) {
         return "disliked";
       } else {
         return "";

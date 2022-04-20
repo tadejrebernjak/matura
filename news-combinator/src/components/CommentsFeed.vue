@@ -5,7 +5,7 @@
   <div class="comments-feed">
     <div class="new-comment-container" v-if="authenticated">
       <div v-if="muted">
-        <h1 class="text-red-500 text-xl text-center font-bold">
+        <h1 class="text-white text-xl text-center font-bold">
           Vaš račun je blokiran do {{ mutedString }} in ne morate komentirati!
         </h1>
       </div>
@@ -31,6 +31,11 @@
         <i class="fas fa-paper-plane"></i>
         <span> Dodaj</span>
       </button>
+    </div>
+    <div v-else class="new-comment-container">
+      <h1 class="text-white text-xl text-center font-bold">
+        Morate se prijaviti, preden lahko komentirate.
+      </h1>
     </div>
     <div class="comments-container">
       <Comment
@@ -129,7 +134,7 @@ export default {
     },
   },
   beforeMount() {
-    if (this.muted) {
+    if (this.authenticated && this.muted) {
       this.mutedString = moment(this.user.muteExpiration).format("LLL");
     }
   },
