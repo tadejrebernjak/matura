@@ -49,13 +49,13 @@ router.post(
 );
 
 router.post(
-  "/:articleID/comments/:commentID/rate",
+  "/comment/:commentID/rate",
   users_controller.authenticateToken,
   comments_controller.rateArticleComment
 );
 
 router.put(
-  "/:articleID/comments/:commentID",
+  "/comment/:commentID",
   users_controller.authenticateToken,
   comments_controller.editArticleComment
 );
@@ -69,33 +69,27 @@ router.delete(
 // ARTICLE COMMENTS REPLIES
 
 router.post(
-  "/:articleID/comments/:commentID/replies",
+  "/comments/:commentID/replies",
   users_controller.authenticateToken,
   replies_controller.addArticleCommentReply
 );
 
 router.post(
-  "/:articleID/comments/:commentID/replies/:replyID/rate",
+  "/replies/:replyID/rate",
   users_controller.authenticateToken,
   replies_controller.rateArticleCommentReply
 );
 
 router.put(
-  "/:articleID/comments/:commentID/replies/:replyID",
+  "/replies/:replyID",
   users_controller.authenticateToken,
   replies_controller.editArticleCommentReply
 );
 
 router.delete(
-  "/:articleID/comments/:commentID/replies/:replyID",
+  "/comments/:commentID/replies/:replyID",
   users_controller.authenticateToken,
   replies_controller.deleteArticleCommentReply
 );
-
-/*router.get('/:id', scraper_controller.product_details);
-
-router.put('/:id/update', scraper_controller.product_update);
-
-router.delete('/:id/delete', scraper_controller.product_delete);*/
 
 module.exports = router;

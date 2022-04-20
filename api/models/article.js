@@ -1,9 +1,13 @@
 var mongoose = require("mongoose");
 
 var ReplySchema = new mongoose.Schema({
-  userID: {
+  user: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
+  },
+  comment: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "Comment",
   },
   username: String,
   body: String,
@@ -14,16 +18,20 @@ var ReplySchema = new mongoose.Schema({
 });
 
 var CommentSchema = new mongoose.Schema({
-  userID: {
+  user: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
+  },
+  article: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "Article",
   },
   body: String,
   createdAt: Date,
   updatedAt: Date,
   likes: [],
   dislikes: [],
-  replies: [ReplySchema],
+  replies: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Reply" }],
 });
 
 var EntrySchema = new mongoose.Schema({
@@ -48,7 +56,7 @@ var ArticleSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  comments: [CommentSchema],
+  comments: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Comment" }],
   likes: [EntrySchema],
   dislikes: [EntrySchema],
   clicks: [EntrySchema],

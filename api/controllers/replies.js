@@ -1,6 +1,10 @@
-let { Article, Reply } = require("../models/article");
+let { Comment, Reply } = require("../models/article");
 
 exports.addArticleCommentReply = async function (req, res) {
+  if (new Date(req.user.muteExpiration) > new Date()) {
+    return res.sendStatus(403);
+  }
+
   try {
     const replyBody = req.body.reply.trim();
 
@@ -9,7 +13,8 @@ exports.addArticleCommentReply = async function (req, res) {
     }
 
     const reply = new Reply({
-      userID: req.user._id,
+      user: req.user._id,
+      comment: req.params.comentID,
       body: replyBody,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -17,14 +22,15 @@ exports.addArticleCommentReply = async function (req, res) {
       dislikes: [],
     });
 
-    await Article.updateOne(
+    await reply.save();
+
+    await Comment.updateOne(
       {
-        _id: req.params.articleID,
-        "comments._id": req.params.commentID,
+        _id: req.params.commentID,
       },
       {
         $push: {
-          "comments.$.replies": reply,
+          replies: reply._id,
         },
       }
     );
@@ -36,30 +42,24 @@ exports.addArticleCommentReply = async function (req, res) {
 };
 
 exports.editArticleCommentReply = async function (req, res) {
+  if (new Date(req.user.muteExpiration) > new Date()) {
+    return res.sendStatus(403);
+  }
+
   try {
     const newReply = req.body.newReply.trim();
     if (newReply === "") {
       return res.status(400).send("Reply is empty");
     }
 
-    await Article.updateOne(
-      {
-        _id: req.params.articleID,
-      },
-      {
-        $set: {
-          "comments.$[comment].replies.$[reply].body": newReply,
-          "comments.$[comment].replies.$[reply].updatedAt": Date.now(),
-        },
-      },
-      {
-        arrayFilters: [
-          { "comment._id": req.params.commentID },
-          { "reply.userID": req.user._id, "reply._id": req.params.replyID },
-        ],
-      }
-    );
-    res.status(200).send("Comment updated");
+    const update = {
+      body: newReply,
+      updatedAt: Date.now(),
+    };
+
+    await Reply.updateOne({ _id: req.params.replyID }, update);
+
+    res.status(200).send("Reply updated");
   } catch (error) {
     console.log(error);
     res.status(500).send("Something went wrong");
@@ -69,30 +69,37 @@ exports.editArticleCommentReply = async function (req, res) {
 exports.deleteArticleCommentReply = async function (req, res) {
   try {
     if (req.user.isAdmin) {
-      await Article.updateOne(
-        { _id: req.params.articleID, "comments._id": req.params.commentID },
+      await Comment.updateOne(
+        { _id: req.params.commentID },
         {
           $pull: {
-            "comments.$.replies": {
-              _id: req.params.replyID,
-            },
+            replies: [req.params.replyID],
           },
         }
       );
+
+      await Reply.deleteOne({ _id: req.params.replyID });
+      res.status(200).send("Deleted reply");
     } else {
-      await Article.updateOne(
-        { _id: req.params.articleID, "comments._id": req.params.commentID },
-        {
-          $pull: {
-            "comments.$.replies": {
-              _id: req.params.replyID,
-              userID: req.user.id,
+      const result = await Reply.deleteOne({
+        _id: req.params.ReplyID,
+        user: req.user.id,
+      });
+
+      if (result.deletedCount > 0) {
+        await Comment.updateOne(
+          { _id: req.params.comentID },
+          {
+            $pull: {
+              replies: [req.params.replyID],
             },
-          },
-        }
-      );
+          }
+        );
+        res.status(200).send("Deleted reply");
+      } else {
+        res.status(500).send("Something went wrong");
+      }
     }
-    res.status(200).send("Deleted reply");
   } catch (error) {
     console.log(error);
     res.status(500).send("Something went wrong");
@@ -103,59 +110,29 @@ exports.rateArticleCommentReply = async function (req, res) {
   try {
     let state = "";
 
-    const article = await Article.findOne({
-      _id: req.params.articleID,
+    const reply = await Reply.findOne({
+      _id: req.params.replyID,
     });
 
-    for (i = 0; i < article.comments.length; i++) {
-      if (article.comments[i]._id == req.params.commentID) {
-        for (y = 0; y < article.comments[i].replies.length; y++) {
-          if (article.comments[i].replies[y]._id == req.params.replyID) {
-            if (article.comments[i].replies[y].likes.includes(req.user._id)) {
-              state = "liked";
-            }
-            if (
-              article.comments[i].replies[y].dislikes.includes(req.user._id)
-            ) {
-              state = "disliked";
-            }
-          }
-        }
-      }
+    if (reply.likes.includes(req.user._id)) {
+      state = "liked";
+    }
+    if (reply.dislikes.includes(req.user._id)) {
+      state = "disliked";
     }
 
     switch (req.body.action) {
       case "like":
         switch (state) {
           case "liked":
-            await unlikeReply(
-              article._id,
-              req.params.commentID,
-              req.params.replyID,
-              req.user._id
-            );
+            await unlikeReply(req.params.replyID, req.user._id);
             break;
           case "disliked":
-            await undislikeReply(
-              article._id,
-              req.params.commentID,
-              req.params.replyID,
-              req.user._id
-            );
-            await likeReply(
-              article._id,
-              req.params.commentID,
-              req.params.replyID,
-              req.user._id
-            );
+            await undislikeReply(req.params.replyID, req.user._id);
+            await likeReply(req.params.replyID, req.user._id);
             break;
           case "":
-            await likeReply(
-              article._id,
-              req.params.commentID,
-              req.params.replyID,
-              req.user._id
-            );
+            await likeReply(req.params.replyID, req.user._id);
             break;
           default:
             break;
@@ -164,34 +141,14 @@ exports.rateArticleCommentReply = async function (req, res) {
       case "dislike":
         switch (state) {
           case "liked":
-            await unlikeReply(
-              article._id,
-              req.params.commentID,
-              req.params.replyID,
-              req.user._id
-            );
-            await dislikeReply(
-              article._id,
-              req.params.commentID,
-              req.params.replyID,
-              req.user._id
-            );
+            await unlikeReply(req.params.replyID, req.user._id);
+            await dislikeReply(req.params.replyID, req.user._id);
             break;
           case "disliked":
-            await undislikeReply(
-              article._id,
-              req.params.commentID,
-              req.params.replyID,
-              req.user._id
-            );
+            await undislikeReply(req.params.replyID, req.user._id);
             break;
           case "":
-            await dislikeReply(
-              article._id,
-              req.params.commentID,
-              req.params.replyID,
-              req.user._id
-            );
+            await dislikeReply(req.params.replyID, req.user._id);
             break;
           default:
             break;
@@ -207,66 +164,54 @@ exports.rateArticleCommentReply = async function (req, res) {
   }
 };
 
-async function likeReply(articleID, commentID, replyID, userID) {
-  await Article.updateOne(
+async function likeReply(replyID, userID) {
+  await Reply.updateOne(
     {
-      _id: articleID,
+      _id: replyID,
     },
     {
       $push: {
-        "comments.$[comment].replies.$[reply].likes": userID,
+        likes: userID,
       },
-    },
-    {
-      arrayFilters: [{ "comment._id": commentID }, { "reply._id": replyID }],
     }
   );
 }
 
-async function unlikeReply(articleID, commentID, replyID, userID) {
-  await Article.updateOne(
+async function unlikeReply(replyID, userID) {
+  await Reply.updateOne(
     {
-      _id: articleID,
+      _id: replyID,
     },
     {
       $pullAll: {
-        "comments.$[comment].replies.$[reply].likes": [userID],
+        likes: [userID],
       },
-    },
-    {
-      arrayFilters: [{ "comment._id": commentID }, { "reply._id": replyID }],
     }
   );
 }
 
-async function dislikeReply(articleID, commentID, replyID, userID) {
-  await Article.updateOne(
+async function dislikeReply(replyID, userID) {
+  await Reply.updateOne(
     {
-      _id: articleID,
+      _id: replyID,
     },
     {
       $push: {
-        "comments.$[comment].replies.$[reply].dislikes": userID,
+        dislikes: userID,
       },
-    },
-    {
-      arrayFilters: [{ "comment._id": commentID }, { "reply._id": replyID }],
     }
   );
 }
 
-async function undislikeReply(articleID, commentID, replyID, userID) {
-  await Article.updateOne(
+async function undislikeReply(replyID, userID) {
+  await ReplyID.updateOne(
     {
-      _id: articleID,
+      _id: replyID,
     },
     {
       $pullAll: {
-        "comments.$[comment].replies.$[reply].dislikes": [userID],
+        dislikes: [userID],
       },
-    },
-    {
-      arrayFilters: [{ "comment._id": commentID }, { "reply._id": replyID }],
     }
   );
 }

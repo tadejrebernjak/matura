@@ -178,6 +178,7 @@ function signToken(res, user) {
     username: user.username,
     pfp: user.pfp,
     isAdmin: user.isAdmin,
+    muteExpiration: user.muteExpiration,
   };
 
   const accessToken = jwt.sign(userTokenData, process.env.ACCESS_TOKEN_SECRET);

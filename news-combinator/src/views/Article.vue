@@ -53,7 +53,6 @@ export default {
     return {
       alert: false,
       article: "",
-      comments: null,
       counters: {
         comments: 0,
         likes: 0,
@@ -97,7 +96,10 @@ export default {
     },
     async getArticle(id) {
       try {
-        this.article = await ArticlesService.getArticleById(id);
+        const result = await ArticlesService.getArticleById(id);
+        this.article = result.article;
+        this.article.comments = result.comments;
+
         if (this.article.image == "https://siol.netundefined")
           this.articleImg = null;
         else this.articleImg = "url(" + this.article.image + ")";
@@ -181,11 +183,7 @@ export default {
       newComment = newComment.trim();
       if (newComment != "") {
         try {
-          const response = await ArticlesService.addComment(
-            this.article._id,
-            newComment
-          );
-          console.log(response);
+          await ArticlesService.addComment(this.article._id, newComment);
           this.getArticle(this.$route.params.id);
         } catch (error) {
           console.log(error);
@@ -197,12 +195,7 @@ export default {
       editBody = editBody.trim();
       if (editBody != "") {
         try {
-          const response = await ArticlesService.editComment(
-            this.article._id,
-            commentID,
-            editBody
-          );
-          console.log(response);
+          await ArticlesService.editComment(commentID, editBody);
           this.getArticle(this.$route.params.id);
         } catch (error) {
           console.log(error);
@@ -225,11 +218,7 @@ export default {
 
     async deleteComment(commentID) {
       try {
-        const response = await ArticlesService.deleteComment(
-          this.article._id,
-          commentID
-        );
-        console.log(response);
+        await ArticlesService.deleteComment(this.article._id, commentID);
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
@@ -237,7 +226,7 @@ export default {
     },
     async likeComment(commentID) {
       try {
-        await ArticlesService.rateComment(this.article._id, commentID, "like");
+        await ArticlesService.rateComment(commentID, "like");
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
@@ -245,11 +234,7 @@ export default {
     },
     async dislikeComment(commentID) {
       try {
-        await ArticlesService.rateComment(
-          this.article._id,
-          commentID,
-          "dislike"
-        );
+        await ArticlesService.rateComment(commentID, "dislike");
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
@@ -257,27 +242,17 @@ export default {
     },
     async addReply(newReply, commentID) {
       try {
-        const response = await ArticlesService.addReply(
-          this.article._id,
-          commentID,
-          newReply
-        );
-        console.log(response);
+        await ArticlesService.addReply(commentID, newReply);
+
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
       }
     },
 
-    async editReply(replyID, commentID, editBody) {
+    async editReply(replyID, editBody) {
       try {
-        const response = await ArticlesService.editCommentReply(
-          this.article._id,
-          replyID,
-          commentID,
-          editBody
-        );
-        console.log(response);
+        await ArticlesService.editCommentReply(replyID, editBody);
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
@@ -286,38 +261,23 @@ export default {
 
     async deleteReply(commentID, replyID) {
       try {
-        const response = await ArticlesService.deleteCommentReply(
-          this.article._id,
-          commentID,
-          replyID
-        );
-        console.log(response);
+        await ArticlesService.deleteCommentReply(commentID, replyID);
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
       }
     },
-    async likeReply(commentID, replyID) {
+    async likeReply(replyID) {
       try {
-        await ArticlesService.rateCommentReply(
-          this.article._id,
-          commentID,
-          replyID,
-          "like"
-        );
+        await ArticlesService.rateCommentReply(replyID, "like");
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);
       }
     },
-    async dislikeReply(commentID, replyID) {
+    async dislikeReply(replyID) {
       try {
-        await ArticlesService.rateCommentReply(
-          this.article._id,
-          commentID,
-          replyID,
-          "dislike"
-        );
+        await ArticlesService.rateCommentReply(replyID, "dislike");
         this.getArticle(this.$route.params.id);
       } catch (error) {
         console.log(error);

@@ -4,7 +4,12 @@
   </h1>
   <div class="comments-feed">
     <div class="new-comment-container" v-if="authenticated">
-      <div class="flex">
+      <div v-if="muted">
+        <h1 class="text-red-500 text-xl text-center font-bold">
+          Vaš račun je blokiran do {{ mutedString }} in ne morate komentirati!
+        </h1>
+      </div>
+      <div v-else class="flex">
         <img
           :src="user.pfp || pfp"
           alt="Pfp"
@@ -22,7 +27,7 @@
           ></textarea>
         </div>
       </div>
-      <button class="new-comment-btn" @click="addComment">
+      <button v-if="!muted" class="new-comment-btn" @click="addComment">
         <i class="fas fa-paper-plane"></i>
         <span> Dodaj</span>
       </button>
@@ -51,6 +56,9 @@
 import { mapGetters } from "vuex";
 let defaultPfp = require("@/assets/default-pfp.jpg");
 import Comment from "../components/Comment";
+import moment from "moment";
+import "moment/locale/sl";
+moment.locale("sl");
 
 export default {
   name: "CommentsFeed",
@@ -76,6 +84,7 @@ export default {
   data: function () {
     return {
       newComment: "",
+      mutedString: "",
       pfp: defaultPfp,
     };
   },
@@ -83,6 +92,7 @@ export default {
     ...mapGetters({
       authenticated: "auth/authenticated",
       user: "auth/user",
+      muted: "auth/muted",
     }),
   },
   methods: {
@@ -105,18 +115,23 @@ export default {
     addReply(newReply, commentID) {
       this.$emit("addReply", newReply, commentID);
     },
-    editReply(replyID, commentID, editBody) {
-      this.$emit("editReply", replyID, commentID, editBody);
+    editReply(replyID, editBody) {
+      this.$emit("editReply", replyID, editBody);
     },
     deleteReply(commentID, replyID) {
       this.$emit("deleteReply", commentID, replyID);
     },
-    likeReply(commentID, replyID) {
-      this.$emit("likeReply", commentID, replyID);
+    likeReply(replyID) {
+      this.$emit("likeReply", replyID);
     },
-    dislikeReply(commentID, replyID) {
-      this.$emit("dislikeReply", commentID, replyID);
+    dislikeReply(replyID) {
+      this.$emit("dislikeReply", replyID);
     },
+  },
+  beforeMount() {
+    if (this.muted) {
+      this.mutedString = moment(this.user.muteExpiration).format("LLL");
+    }
   },
 };
 </script>

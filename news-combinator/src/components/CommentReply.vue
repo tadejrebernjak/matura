@@ -6,8 +6,23 @@
     <div class="reply-right">
       <div class="reply-head">
         <div>
-          <p class="text-lg font-bold text-green-500">
+          <router-link
+            v-if="
+              user.isAdmin && reply.user._id != user._id && !reply.user.isAdmin
+            "
+            :to="'/admin/user/' + reply.user._id"
+          >
+            <p class="text-lg font-bold text-green-500">
+              {{ reply.user.username }}
+              <span class="text-blue-500" v-if="reply.user.isAdmin"
+                >[ADMIN]</span
+              >
+            </p>
+          </router-link>
+
+          <p v-else class="text-lg font-bold text-green-500">
             {{ reply.user.username }}
+            <span class="text-blue-500" v-if="reply.user.isAdmin">[ADMIN]</span>
           </p>
           <p class="text-sm font-semibold text-gray-500">
             {{ replyCreatedAt }}
@@ -15,7 +30,7 @@
           </p>
         </div>
         <div
-          v-if="authenticated && user._id === reply.userID"
+          v-if="authenticated && (user._id === reply.userID || user.isAdmin)"
           class="text-xl cursor-pointer hover:text-gray-600"
           @click="$emit('deleteReply', reply._id)"
         >
@@ -29,12 +44,12 @@
       <div
         class="reply-foot justify-end"
         :class="{
-          'justify-between': authenticated && user._id === reply.userID,
+          'justify-between': authenticated && user._id === reply.user._id,
         }"
       >
         <div
           class="flex items-center justify-center"
-          v-if="authenticated && user._id === reply.userID"
+          v-if="authenticated && user._id === reply.user._id"
         >
           <button class="edit-button" @click="editToggle">
             <span v-if="!editing"><i class="fas fa-edit"></i> Uredi</span>

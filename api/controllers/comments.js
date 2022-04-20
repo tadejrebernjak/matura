@@ -1,16 +1,14 @@
 let { Article, Comment } = require("../models/article");
 
 exports.addArticleComment = async function (req, res) {
-  try {
-    /*const article = await Article.findOne({ _id: req.params.id });
-      for (i = 0; i < article.comments.length; i++) {
-        if (article.comments[i].userID.equals(req.user._id)) {
-          return res.status(400).send("User already commented");
-        }
-      }*/
+  if (new Date(req.user.muteExpiration) > new Date()) {
+    return res.sendStatus(403);
+  }
 
+  try {
     const comment = new Comment({
-      userID: req.user._id,
+      user: req.user._id,
+      article: req.params.id,
       body: req.body.comment,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -19,9 +17,11 @@ exports.addArticleComment = async function (req, res) {
       replies: [],
     });
 
+    await comment.save();
+
     await Article.updateOne(
       { _id: req.params.id },
-      { $push: { comments: comment } }
+      { $push: { comments: comment._id } }
     );
 
     res.status(201).send("Comment created");
@@ -32,31 +32,23 @@ exports.addArticleComment = async function (req, res) {
 };
 
 exports.editArticleComment = async function (req, res) {
+  if (new Date(req.user.muteExpiration) > new Date()) {
+    return res.sendStatus(403);
+  }
+
   try {
     const newComment = req.body.newComment.trim();
     if (newComment === "") {
       return res.status(400).send("Comment is empty");
     }
 
-    await Article.updateOne(
-      {
-        _id: req.params.articleID,
-      },
-      {
-        $set: {
-          "comments.$[comment].body": newComment,
-          "comments.$[comment].updatedAt": Date.now(),
-        },
-      },
-      {
-        arrayFilters: [
-          {
-            "comment.userID": req.user._id,
-            "comment._id": req.params.commentID,
-          },
-        ],
-      }
-    );
+    const update = {
+      body: newComment,
+      updatedAt: Date.now(),
+    };
+
+    await Comment.updateOne({ _id: req.params.commentID }, update);
+
     res.status(200).send("Comment updated");
   } catch (error) {
     console.log(error);
@@ -70,20 +62,32 @@ exports.deleteArticleComment = async function (req, res) {
       await Article.updateOne(
         { _id: req.params.articleID },
         {
-          $pull: { comments: { _id: req.params.commentID } },
+          $pull: { comments: [req.params.commentID] },
         }
       );
+
+      await Comment.deleteOne({ _id: req.params.commentID });
+      res.status(200).send("Deleted comment");
     } else {
-      await Article.updateOne(
-        { _id: req.params.articleID },
-        {
-          $pull: {
-            comments: { _id: req.params.commentID, userID: req.user.id },
-          },
-        }
-      );
+      const result = await Comment.deleteOne({
+        _id: req.params.commentID,
+        user: req.user.id,
+      });
+
+      if (result.deletedCount > 0) {
+        await Article.updateOne(
+          { _id: req.params.articleID },
+          {
+            $pull: {
+              comments: [req.params.commentID],
+            },
+          }
+        );
+        res.status(200).send("Deleted comment");
+      } else {
+        res.status(500).send("Something went wrong");
+      }
     }
-    res.status(200).send("Deleted comment");
   } catch (error) {
     console.log(error);
     res.status(500).send("Something went wrong");
@@ -94,41 +98,29 @@ exports.rateArticleComment = async function (req, res) {
   try {
     let state = "";
 
-    const article = await Article.findOne({
-      _id: req.params.articleID,
+    const comment = await Comment.findOne({
+      _id: req.params.commentID,
     });
 
-    for (i = 0; i < article.comments.length; i++) {
-      if (article.comments[i]._id == req.params.commentID) {
-        if (article.comments[i].likes.includes(req.user._id)) {
-          state = "liked";
-        }
-        if (article.comments[i].dislikes.includes(req.user._id)) {
-          state = "disliked";
-        }
-      }
+    if (comment.likes.includes(req.user._id)) {
+      state = "liked";
+    }
+    if (comment.dislikes.includes(req.user._id)) {
+      state = "disliked";
     }
 
     switch (req.body.action) {
       case "like":
         switch (state) {
           case "liked":
-            await unlikeComment(
-              article._id,
-              req.params.commentID,
-              req.user._id
-            );
+            await unlikeComment(req.params.commentID, req.user._id);
             break;
           case "disliked":
-            await undislikeComment(
-              article._id,
-              req.params.commentID,
-              req.user._id
-            );
-            await likeComment(article._id, req.params.commentID, req.user._id);
+            await undislikeComment(req.params.commentID, req.user._id);
+            await likeComment(req.params.commentID, req.user._id);
             break;
           case "":
-            await likeComment(article._id, req.params.commentID, req.user._id);
+            await likeComment(req.params.commentID, req.user._id);
             break;
           default:
             break;
@@ -137,30 +129,14 @@ exports.rateArticleComment = async function (req, res) {
       case "dislike":
         switch (state) {
           case "liked":
-            await unlikeComment(
-              article._id,
-              req.params.commentID,
-              req.user._id
-            );
-            await dislikeComment(
-              article._id,
-              req.params.commentID,
-              req.user._id
-            );
+            await unlikeComment(req.params.commentID, req.user._id);
+            await dislikeComment(req.params.commentID, req.user._id);
             break;
           case "disliked":
-            await undislikeComment(
-              article._id,
-              req.params.commentID,
-              req.user._id
-            );
+            await undislikeComment(req.params.commentID, req.user._id);
             break;
           case "":
-            await dislikeComment(
-              article._id,
-              req.params.commentID,
-              req.user._id
-            );
+            await dislikeComment(req.params.commentID, req.user._id);
             break;
           default:
             break;
@@ -176,82 +152,54 @@ exports.rateArticleComment = async function (req, res) {
   }
 };
 
-async function likeComment(articleID, commentID, userID) {
-  await Article.updateOne(
+async function likeComment(commentID, userID) {
+  await Comment.updateOne(
     {
-      _id: articleID,
+      _id: commentID,
     },
     {
       $push: {
-        "comments.$[comment].likes": userID,
+        likes: userID,
       },
-    },
-    {
-      arrayFilters: [
-        {
-          "comment._id": commentID,
-        },
-      ],
     }
   );
 }
 
-async function unlikeComment(articleID, commentID, userID) {
-  await Article.updateOne(
+async function unlikeComment(commentID, userID) {
+  await Comment.updateOne(
     {
-      _id: articleID,
+      _id: commentID,
     },
     {
       $pullAll: {
-        "comments.$[comment].likes": [userID],
+        likes: [userID],
       },
-    },
-    {
-      arrayFilters: [
-        {
-          "comment._id": commentID,
-        },
-      ],
     }
   );
 }
 
-async function dislikeComment(articleID, commentID, userID) {
-  await Article.updateOne(
+async function dislikeComment(commentID, userID) {
+  await Comment.updateOne(
     {
-      _id: articleID,
+      _id: commentID,
     },
     {
       $push: {
-        "comments.$[comment].dislikes": userID,
+        dislikes: userID,
       },
-    },
-    {
-      arrayFilters: [
-        {
-          "comment._id": commentID,
-        },
-      ],
     }
   );
 }
 
-async function undislikeComment(articleID, commentID, userID) {
-  await Article.updateOne(
+async function undislikeComment(commentID, userID) {
+  await Comment.updateOne(
     {
-      _id: articleID,
+      _id: commentID,
     },
     {
       $pullAll: {
-        "comments.$[comment].dislikes": [userID],
+        dislikes: [userID],
       },
-    },
-    {
-      arrayFilters: [
-        {
-          "comment._id": commentID,
-        },
-      ],
     }
   );
 }

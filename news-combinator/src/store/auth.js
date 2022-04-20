@@ -21,6 +21,16 @@ export default {
       else return false;
     },
 
+    muted(state) {
+      if (
+        state.user.muteExpiration &&
+        new Date(state.user.muteExpiration) > new Date() &&
+        !state.user.isAdmin
+      )
+        return true;
+      else return false;
+    },
+
     user(state) {
       return state.user;
     },

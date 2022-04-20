@@ -1,4 +1,4 @@
-let { Article, Rating, Visit } = require("../models/article");
+let { Article, Comment, Reply, Rating, Visit } = require("../models/article");
 let User = require("../models/user");
 
 exports.getArticles = async function (req, res) {
@@ -117,31 +117,17 @@ exports.getTodayArticles = async function (req, res) {
 
 exports.getArticleById = async function (req, res) {
   try {
-    let article = await Article.findOne({ _id: req.params.id }).lean().exec();
+    const article = await Article.findOne({ _id: req.params.id }).lean().exec();
+    const comments = await Comment.find({ article: req.params.id })
+      .populate("user")
+      .populate({
+        path: "replies",
+        populate: { path: "user" },
+      });
 
-    // Adds user information to comments
-    for (i = 0; i < article.comments.length; i++) {
-      let user = await User.findOne({ _id: article.comments[i].userID });
-
-      article.comments[i].user = {
-        username: user.username,
-        pfp: user.pfp || null,
-      };
-
-      // Adds user information to replies
-      for (y = 0; y < article.comments[i].replies.length; y++) {
-        let user2 = await User.findOne({
-          _id: article.comments[i].replies[y].userID,
-        });
-
-        article.comments[i].replies[y].user = {
-          username: user2.username,
-          pfp: user2.pfp || null,
-        };
-      }
-    }
-    res.send(article);
+    res.send({ article: article, comments: comments });
   } catch (error) {
+    console.log(error);
     res.send(error);
   }
 };

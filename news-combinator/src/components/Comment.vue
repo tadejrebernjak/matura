@@ -6,16 +6,38 @@
     <div class="comment-right">
       <div class="comment-head">
         <div>
-          <p class="text-lg font-bold text-green-500">
+          <router-link
+            v-if="
+              user.isAdmin &&
+              comment.user._id != user._id &&
+              !comment.user.isAdmin
+            "
+            :to="'/admin/user/' + comment.user._id"
+          >
+            <p class="text-lg font-bold text-green-500">
+              {{ comment.user.username }}
+              <span class="text-blue-500" v-if="comment.user.isAdmin"
+                >[ADMIN]</span
+              >
+            </p>
+          </router-link>
+
+          <p v-else class="text-lg font-bold text-green-500">
             {{ comment.user.username }}
+            <span class="text-blue-500" v-if="comment.user.isAdmin"
+              >[ADMIN]</span
+            >
           </p>
+
           <p class="text-sm font-semibold text-gray-500">
             {{ commentCreatedAt }}
             <span v-if="isEdited"> (urejen)</span>
           </p>
         </div>
         <div
-          v-if="authenticated && (user._id === comment.userID || user.isAdmin)"
+          v-if="
+            authenticated && (user._id === comment.user._id || user.isAdmin)
+          "
           class="text-xl cursor-pointer hover:text-gray-600"
           @click="$emit('deleteComment', comment._id)"
         >
@@ -33,7 +55,11 @@
       >
         <div
           class="flex items-center justify-center"
-          v-if="authenticated && user._id !== comment.userID"
+          v-if="
+            authenticated &&
+            user._id !== comment.user._id &&
+            (!muted || user.isAdmin)
+          "
         >
           <button class="reply-button" @click="newReplyToggle">
             <span v-if="!replying"><i class="fas fa-reply"></i> Odgovori</span>
@@ -43,7 +69,11 @@
 
         <div
           class="flex items-center justify-center"
-          v-if="authenticated && user._id === comment.userID"
+          v-if="
+            authenticated &&
+            user._id === comment.user._id &&
+            (!muted || user.isAdmin)
+          "
         >
           <button class="reply-button" @click="editToggle">
             <span v-if="!editing"><i class="fas fa-edit"></i> Uredi</span>
@@ -135,6 +165,7 @@ export default {
     ...mapGetters({
       authenticated: "auth/authenticated",
       user: "auth/user",
+      muted: "auth/muted",
     }),
   },
   emits: [
@@ -221,16 +252,16 @@ export default {
       this.newReply = "";
     },
     editReply(replyID, editBody) {
-      this.$emit("editReply", this.comment._id, replyID, editBody);
+      this.$emit("editReply", replyID, editBody);
     },
     deleteReply(replyID) {
       this.$emit("deleteReply", this.comment._id, replyID);
     },
     likeReply(replyID) {
-      this.$emit("likeReply", this.comment._id, replyID);
+      this.$emit("likeReply", replyID);
     },
     dislikeReply(replyID) {
-      this.$emit("dislikeReply", this.comment._id, replyID);
+      this.$emit("dislikeReply", replyID);
     },
   },
   mounted() {
@@ -265,7 +296,7 @@ export default {
 }
 
 .comment-foot {
-  @apply my-2 flex;
+  @apply my-2 flex flex-row;
 }
 
 .like-button,

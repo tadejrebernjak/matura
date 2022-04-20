@@ -95,14 +95,11 @@ class ArticlesService {
     }
   }
 
-  static async rateComment(articleID, commentID, action) {
+  static async rateComment(commentID, action) {
     try {
-      await api.post(
-        "articles/" + articleID + "/comments/" + commentID + "/rate",
-        {
-          action: action,
-        }
-      );
+      await api.post("articles/comment/" + commentID + "/rate", {
+        action: action,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -119,10 +116,10 @@ class ArticlesService {
     }
   }
 
-  static async addReply(articleID, commentID, newReply) {
+  static async addReply(commentID, newReply) {
     try {
       const response = await api.post(
-        "articles/" + articleID + "/comments/" + commentID + "/replies",
+        "articles/comments/" + commentID + "/replies",
         {
           reply: newReply,
         }
@@ -133,34 +130,21 @@ class ArticlesService {
     }
   }
 
-  static async editCommentReply(articleID, commentID, replyID, editBody) {
+  static async editCommentReply(replyID, editBody) {
     try {
-      const response = await api.put(
-        "articles/" +
-          articleID +
-          "/comments/" +
-          commentID +
-          "/replies/" +
-          replyID,
-        {
-          newReply: editBody,
-        }
-      );
+      const response = await api.put("articles/replies/" + replyID, {
+        newReply: editBody,
+      });
       return response;
     } catch (error) {
       return error;
     }
   }
 
-  static async deleteCommentReply(articleID, commentID, replyID) {
+  static async deleteCommentReply(commentID, replyID) {
     try {
       const response = await api.delete(
-        "articles/" +
-          articleID +
-          "/comments/" +
-          commentID +
-          "/replies/" +
-          replyID
+        "articles/comments/" + commentID + "/replies/" + replyID
       );
       return response;
     } catch (error) {
@@ -168,14 +152,11 @@ class ArticlesService {
     }
   }
 
-  static async editComment(articleID, commentID, editBody) {
+  static async editComment(commentID, editBody) {
     try {
-      const response = await api.put(
-        "articles/" + articleID + "/comments/" + commentID,
-        {
-          newComment: editBody,
-        }
-      );
+      const response = await api.put("articles/comment/" + commentID, {
+        newComment: editBody,
+      });
       return response;
     } catch (error) {
       return error;
@@ -193,20 +174,11 @@ class ArticlesService {
     }
   }
 
-  static async rateCommentReply(articleID, commentID, replyID, action) {
+  static async rateCommentReply(replyID, action) {
     try {
-      await api.post(
-        "articles/" +
-          articleID +
-          "/comments/" +
-          commentID +
-          "/replies/" +
-          replyID +
-          "/rate",
-        {
-          action: action,
-        }
-      );
+      await api.post("articles/replies/" + replyID + "/rate", {
+        action: action,
+      });
     } catch (error) {
       console.log(error);
     }
