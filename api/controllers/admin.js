@@ -245,9 +245,13 @@ exports.removePfp = async function (req, res) {
     return res.sendStatus(404);
   }
 
-  const pathSplit = user.pfp.split("/");
-  const fileDeletePath = "./" + pathSplit[3] + "/" + pathSplit[4];
-  fs.unlinkSync(fileDeletePath);
+  try {
+    const pathSplit = user.pfp.split("/");
+    const fileDeletePath = "./" + pathSplit[3] + "/" + pathSplit[4];
+    fs.unlinkSync(fileDeletePath);
+  } catch (error) {
+    console.log(error);
+  }
 
   try {
     await User.updateOne({ _id: req.params.userID }, { pfp: null });

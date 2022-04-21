@@ -1,6 +1,7 @@
 let { Article } = require("../models/article");
 
 const axios = require("axios");
+const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 
 const settings = {
@@ -32,23 +33,35 @@ exports.scrape24ur = async function () {
   const provider = settings.providers.find(
     (provider) => provider.name === "24ur"
   );
-  try {
-    const articlesResponse = await axios(provider.url);
-    var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
-    const timeline = await $(".timeline");
 
-    $(".timeline__item", timeline).each(function () {
+  try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.goto(provider.url, {
+      waitUntil: "networkidle0",
+    });
+    await page.waitForSelector(".text-14");
+    const html = await page.evaluate(
+      () => document.querySelector(".latest").outerHTML
+    );
+    browser.close();
+
+    var $ = cheerio.load(html);
+    let articles = [];
+    const timeline = await $(".latest");
+
+    $("a.flex-col", timeline).each(function () {
       const source = "24ur";
       const url = provider.baseUrl + $(this).attr("href");
-      const title = $(this).find(".card__title-inside").text().trim();
-      let date = $(this).find(".timeline__date").text().trim();
-      let time = $(this).find(".timeline__time").text().trim();
+      const title = $(this).find("h2").text().trim();
+      let date = $(this).find(".text-14").text().trim();
+      let time = $(this).find(".-ml-24").text().trim();
       date = date.replace(/\s+/g, "");
       date = formatDate(date);
       time = time.split(" ").pop();
       const timestamp = getTimestamp(date, time);
-      const summary = $(this).find(".card__summary").text().trim();
+      const summary = $(this).find("p").text().trim();
       const category = extractUrlCategory(url, 3);
       const image = $(this).find("img").attr("src");
 
@@ -79,7 +92,7 @@ exports.scrapeDelo = async function () {
   try {
     const articlesResponse = await axios(provider.url);
     var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
+    let articles = [];
     const timeline = await $(".timeline");
 
     $(".paginator_item", timeline).each(function () {
@@ -153,7 +166,7 @@ exports.scrapeSiol = async function () {
   try {
     const articlesResponse = await axios(provider.url);
     var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
+    let articles = [];
     const timeline = await $(".timemachine__article_list");
 
     $(".timemachine__article_item", timeline).each(function () {
@@ -216,7 +229,7 @@ exports.scrapeSlovenskeNovice = async function () {
   try {
     const articlesResponse = await axios(provider.url);
     var $ = cheerio.load(articlesResponse.data);
-    const articles = [];
+    let articles = [];
     const timeline = await $(".timeline__section");
 
     $(".paginator_item", timeline).each(function () {
@@ -355,19 +368,20 @@ function getTimestamp(date, time) {
 }
 
 exports.insertArticles = async function (articles) {
+  let counter = 0;
   try {
-    articles.forEach((article) => {
-      Article.countDocuments({ url: article.url }, function (err, count) {
-        if (count === 0) {
-          article.save(function (error) {
-            if (error) {
-              console.log(error);
-            }
-          });
-        }
-      });
-    });
-    console.log("Successfully updated articles in database");
+    for (let i = 0; i < articles.length; i++) {
+      const count = await Article.countDocuments({ url: articles[i].url });
+      if (count === 0) {
+        await articles[i].save(function (error) {
+          if (error) {
+            console.log(error);
+          }
+        });
+        counter++;
+      }
+    }
+    console.log("Saved " + counter + " articles to the database");
   } catch (error) {
     console.log(error);
   }

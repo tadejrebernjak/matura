@@ -5,10 +5,10 @@
     <span class="text-green-600">Urejanje uporabnika</span>
   </h1>
   <div
-    class="my-10 border border-gray-400 rounded-md shadow-md flex flex-wrap overflow-hidden"
+    class="my-10 border border-gray-400 rounded-md shadow-md flex flex-row flex-wrap sm:flex-nowrap overflow-hidden"
   >
     <div
-      class="w-2/5 border-r border-gray-400 grid items-center justify-center p-4"
+      class="w-full sm:w-2/5 min-w-max sm:border-r border-gray-400 grid items-center justify-center p-4"
     >
       <img
         class="rounded-full object-cover w-64 h-64 border-2 border-gray-400"
@@ -26,7 +26,7 @@
         </button>
       </div>
     </div>
-    <div class="w-3/5">
+    <div class="w-full sm:w-3/5">
       <div class="form-control">
         <span class="font-bold text-lg">ID: </span>
         <span class="cursor-pointer" @click="copyID(editUser._id)">{{

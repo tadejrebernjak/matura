@@ -7,23 +7,23 @@
       <div class="menu-head">
         <i class="fas fa-window-close text-3xl" @click="close"></i>
         <router-link to="/">
-          <span class="text-4xl ml-10">Novice</span>
+          <span class="text-4xl ml-10" @click="close">Novice</span>
         </router-link>
       </div>
       <div class="menu-body">
         <ul>
           <li>
-            <router-link to="/news/sport">
+            <router-link to="/news/sport" @click="close">
               <span class="text-xl uppercase">Šport</span>
             </router-link>
           </li>
           <li>
-            <router-link to="/news/chronicle">
+            <router-link to="/news/chronicle" @click="close">
               <span class="text-xl uppercase">Kronika</span>
             </router-link>
           </li>
           <li>
-            <router-link to="/today">
+            <router-link to="/today" @click="close">
               <span class="text-xl uppercase">Danes</span>
             </router-link>
           </li>

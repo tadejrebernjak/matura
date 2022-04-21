@@ -4,6 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const axios = require("axios");
+const cron = require("node-cron");
 
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
@@ -32,6 +34,14 @@ app.use("/scraper", scraperRouter);
 app.use("/articles", articlesRouter);
 app.use("/users", usersRouter);
 app.use("/admin", adminRouter);
+
+cron.schedule("*/10 * * * *", async () => {
+  try {
+    await axios.post(`http://localhost:${port}/scraper`);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.listen(port, () =>
   console.log(`Server listening on http://localhost:${port}`)

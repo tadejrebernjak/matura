@@ -11,49 +11,51 @@
     @changePage="changePage"
   />
   <OrderSelect :order="order" @select="orderSelect" />
-  <table class="w-full">
-    <tr class="rounded-t-md">
-      <th class="pfp">Avatar</th>
-      <th class="username">Username</th>
-      <th class="email">Email</th>
-      <th class="actions">Actions</th>
-    </tr>
-    <tr
-      v-for="(user, index) in shownUsers"
-      :item="user"
-      :index="index"
-      :key="user._id"
-      :user="user"
-    >
-      <td class="text-center">
-        <img class="avatar" :src="user.pfp || pfp" alt="Avatar" />
-      </td>
-      <td>
-        {{ user.username }}
-      </td>
-      <td>
-        <p>{{ user.email }}</p>
-      </td>
-      <td>
-        <div class="actions-container">
-          <span>
-            <router-link :to="'/admin/user/' + user._id">
-              <i class="fas fa-pen"></i>
+  <div class="block overflow-auto">
+    <table class="w-full">
+      <tr class="rounded-t-md">
+        <th class="pfp">Avatar</th>
+        <th class="username">Username</th>
+        <th class="email">Email</th>
+        <th class="actions">Actions</th>
+      </tr>
+      <tr
+        v-for="(user, index) in shownUsers"
+        :item="user"
+        :index="index"
+        :key="user._id"
+        :user="user"
+      >
+        <td class="text-center">
+          <img class="avatar" :src="user.pfp || pfp" alt="Avatar" />
+        </td>
+        <td>
+          {{ user.username }}
+        </td>
+        <td>
+          <p>{{ user.email }}</p>
+        </td>
+        <td>
+          <div class="actions-container">
+            <span>
+              <router-link :to="'/admin/user/' + user._id">
+                <i class="fas fa-pen"></i>
+                <div class="tooltip">
+                  <p>Edit</p>
+                </div>
+              </router-link>
+            </span>
+            <span @click="deleteUserConfirm(user._id)">
+              <i class="fas fa-trash"></i>
               <div class="tooltip">
-                <p>Edit</p>
+                <p>Delete</p>
               </div>
-            </router-link>
-          </span>
-          <span @click="deleteUserConfirm(user._id)">
-            <i class="fas fa-trash"></i>
-            <div class="tooltip">
-              <p>Delete</p>
-            </div>
-          </span>
-        </div>
-      </td>
-    </tr>
-  </table>
+            </span>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
   <Paginator
     v-if="pages > 1"
     :pages="pages"

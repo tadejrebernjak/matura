@@ -12,50 +12,52 @@
     @changePage="changePage"
   />
   <OrderSelect :order="order" @select="orderSelect" />
-  <table class="table-fixed">
-    <tr class="rounded-t-md">
-      <th class="source">Source</th>
-      <th class="title">Title</th>
-      <th class="datetime">Date & Time</th>
-      <th class="actions">Actions</th>
-    </tr>
-    <tr
-      v-for="(article, index) in shownArticles"
-      :item="article"
-      :index="index"
-      :key="article.id"
-      :article="article"
-    >
-      <td>{{ article.source }}</td>
-      <td>
-        <router-link :to="'/article/' + article._id">{{
-          article.title
-        }}</router-link>
-      </td>
-      <td class="text-center">
-        <p>{{ article.date }}</p>
-        <p class="font-bold">{{ article.time }}</p>
-      </td>
-      <td>
-        <div class="actions-container">
-          <span @click="toggleVisibility(article._id)">
-            <i v-if="!article.hidden" class="far fa-eye"></i>
-            <i v-else class="far fa-eye-slash"></i>
-            <div class="tooltip">
-              <p v-if="!article.hidden">Hide</p>
-              <p v-else>Unhide</p>
-            </div>
-          </span>
-          <span @click="deleteArticleConfirm(article._id)">
-            <i class="fas fa-trash"></i>
-            <div class="tooltip">
-              <p>Delete</p>
-            </div>
-          </span>
-        </div>
-      </td>
-    </tr>
-  </table>
+  <div class="block overflow-auto">
+    <table class="table-fixed">
+      <tr class="rounded-t-md">
+        <th class="source">Source</th>
+        <th class="title">Title</th>
+        <th class="datetime">Date & Time</th>
+        <th class="actions">Actions</th>
+      </tr>
+      <tr
+        v-for="(article, index) in shownArticles"
+        :item="article"
+        :index="index"
+        :key="article.id"
+        :article="article"
+      >
+        <td>{{ article.source }}</td>
+        <td>
+          <router-link :to="'/article/' + article._id">{{
+            article.title
+          }}</router-link>
+        </td>
+        <td class="text-center">
+          <p>{{ article.date }}</p>
+          <p class="font-bold">{{ article.time }}</p>
+        </td>
+        <td>
+          <div class="actions-container">
+            <span @click="toggleVisibility(article._id)">
+              <i v-if="!article.hidden" class="far fa-eye"></i>
+              <i v-else class="far fa-eye-slash"></i>
+              <div class="tooltip">
+                <p v-if="!article.hidden">Hide</p>
+                <p v-else>Unhide</p>
+              </div>
+            </span>
+            <span @click="deleteArticleConfirm(article._id)">
+              <i class="fas fa-trash"></i>
+              <div class="tooltip">
+                <p>Delete</p>
+              </div>
+            </span>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
   <Paginator
     v-if="pages > 1"
     :pages="pages"

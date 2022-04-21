@@ -55,12 +55,19 @@ router.get("/all", async (req, res) => {
   res.send(articles);
 });
 
-/*router.post('/create', scraper_controller.product_create);
+router.post("/", async (req, res) => {
+  let stirindvajstur = await scraper_controller.scrape24ur();
+  let delo = await scraper_controller.scrapeDelo();
+  let siol = await scraper_controller.scrapeSiol();
+  let slovenskenovice = await scraper_controller.scrapeSlovenskeNovice();
 
-router.get('/:id', scraper_controller.product_details);
+  let articles = [...stirindvajstur, ...delo, ...siol, ...slovenskenovice];
 
-router.put('/:id/update', scraper_controller.product_update);
+  articles.sort((a, b) => b.timestamp - a.timestamp);
 
-router.delete('/:id/delete', scraper_controller.product_delete);*/
+  scraper_controller.insertArticles(articles);
+
+  res.sendStatus(200);
+});
 
 module.exports = router;

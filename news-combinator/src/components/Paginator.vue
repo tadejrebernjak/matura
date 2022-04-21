@@ -77,7 +77,7 @@ export default {
 
 <style scoped>
 .paginator {
-  @apply my-7 border-gray-500 flex justify-center;
+  @apply my-7 border-gray-500 flex flex-shrink justify-center;
 }
 
 button {

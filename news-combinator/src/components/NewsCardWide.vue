@@ -13,7 +13,7 @@
         {{ article.source }}
       </div>
       <router-link :to="'/article/' + article._id">
-        <span v-if="article.image == 'https://siol.netundefined'">
+        <span v-if="article.image == null">
           <img class="card-image" :src="noImage" />
         </span>
         <span v-else>
@@ -68,15 +68,16 @@ export default {
 <style scoped>
 .card {
   min-height: 204px;
-  @apply w-full relative border border-gray-400 bg-gray-50 shadow-md flex mb-4;
+  @apply w-full relative border border-gray-400 bg-gray-50 shadow-md flex flex-row flex-wrap sm:flex-nowrap mb-4;
 }
 
 .card-image {
-  @apply object-cover w-3/5 p-3 relative;
+  @apply object-cover w-full sm:w-2/5 p-3 relative;
 }
 
 .card-image img {
   width: 100%;
+  min-width: 350px;
   max-height: 180px;
 }
 
@@ -102,7 +103,7 @@ export default {
 }
 
 .card-content {
-  @apply w-full p-4 pb-6;
+  @apply w-full sm:w-3/5 p-4 pb-12 sm:pb-6;
 }
 
 .card-title {
