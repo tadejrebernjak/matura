@@ -9,40 +9,7 @@
   <div
     class="my-10 border border-gray-400 rounded-md shadow-md flex flex-wrap sm:flex-nowrap overflow-hidden"
   >
-    <div
-      class="w-full sm:w-2/3 min-w-min border-r border-gray-400 grid items-center justify-center p-4"
-    >
-      <img
-        class="rounded-full object-cover w-64 h-64 border-2 border-gray-400"
-        :src="pfp"
-        ref="pfpPreview"
-        alt="Profilna slika"
-      />
-      <div class="mt-2 text-center">
-        <label
-          for="pfp"
-          class="p-3 mr-3 table-cell font-normal text-white rounded-sm bg-gray-500 hover:bg-gray-400 text-xl transition duration-200 w-max cursor-pointer"
-          style="display: inline-block"
-        >
-          Spremeni
-        </label>
-        <button
-          v-if="!pfpError && pfpFile"
-          class="p-3 inline m-auto text-white rounded-sm bg-green-500 hover:bg-green-400 text-xl transition duration-200 w-max cursor-pointer"
-          @click="uploadPfp"
-        >
-          Shrani
-        </button>
-      </div>
-      <p class="error">{{ pfpError }}</p>
-      <input
-        type="file"
-        id="pfp"
-        style="visibility: hidden; width: 0; height: 0"
-        @change="authenticatePfp"
-      />
-    </div>
-    <div class="w-full sm:w-3/5 mb-7">
+    <div class="w-full mb-7">
       <div class="form-control">
         <label for="email">E-Pošta</label>
         <div class="input-container" :class="{ borderRed: emailError }">
@@ -126,7 +93,6 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import userService from "../userService";
-let defaultPfp = require("@/assets/default-pfp.jpg");
 
 export default {
   name: "Dashboard",
@@ -136,13 +102,9 @@ export default {
       username: "",
       email: "",
       password: "",
-      pfp: defaultPfp,
-      pfpFile: null,
-      pfpFileName: null,
       emailError: "",
       usernameError: "",
       passwordError: "",
-      pfpError: "",
       formInvalid: true,
       error: "",
       saved: false,
@@ -167,7 +129,6 @@ export default {
       this.$nextTick(function () {
         this.username = this.user.username;
         this.email = this.user.email;
-        this.pfp = this.user.pfp || defaultPfp;
       });
     },
 
@@ -247,56 +208,6 @@ export default {
           }
         } catch (error) {
           this.error = error.message;
-        }
-      }
-    },
-
-    authenticatePfp(event) {
-      const reg = /(\.jpg|\.jpeg|\.png)$/i;
-      const file = event.target.files[0];
-      const fileSize = Math.round(file.size / 1024);
-      let error = false;
-      if (file) {
-        if (!reg.exec(file.name)) {
-          this.pfpError = "Napačen tip datoteke. ";
-          error = true;
-        }
-        if (fileSize > 2 * 1024) {
-          this.pfpError = "Slika ne sme biti večja od 2 MB.";
-          error = true;
-        }
-        if (error) {
-          this.pfp = this.user.pfp || defaultPfp;
-          this.pfpFile = null;
-          this.pfpFileName = null;
-          return;
-        }
-        this.pfp = URL.createObjectURL(file);
-        this.pfpFile = file;
-        this.pfpFileName = file.name;
-        this.pfpError = "";
-      }
-    },
-
-    async uploadPfp() {
-      if (this.pfp && this.pfpError == "") {
-        try {
-          const response = await userService.uploadPfp(
-            this.pfpFile,
-            this.pfpFileName
-          );
-          this.pfpFile = null;
-          this.pfpFileName = null;
-          await this.saveToken(response.data.accessToken);
-          this.$emit("notify", {
-            type: "success",
-            message: "Profilna slika spremenjena",
-          });
-        } catch (error) {
-          this.$emit("notify", {
-            type: "error",
-            message: error,
-          });
         }
       }
     },

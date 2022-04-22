@@ -93,15 +93,6 @@ class AdminService {
     }
   }
 
-  static async removePfp(userID) {
-    try {
-      const response = await api.delete("admin/user/pfp/" + userID);
-      return response;
-    } catch (error) {
-      return error;
-    }
-  }
-
   static async muteUser(userID, muteDays) {
     try {
       const response = await api.post("admin/user/mute", {

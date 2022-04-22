@@ -32,22 +32,6 @@ class UserService {
     }
   }
 
-  static async uploadPfp(file, filename) {
-    const formData = new FormData();
-    formData.append("file", file, filename);
-
-    try {
-      const response = await api.post("users/pfp", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      return response;
-    } catch (error) {
-      return error.response;
-    }
-  }
-
   static async authenticateUser(email, password) {
     try {
       const response = await api.post("users/login", {

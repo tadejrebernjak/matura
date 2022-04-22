@@ -10,11 +10,11 @@
         <router-link to="/">
           <span class="text-4xl">Novice</span>
         </router-link>
+        <router-link to="/" class="ml-4">
+          <span class="text-xl uppercase">Domov</span>
+        </router-link>
         <router-link to="/news/sport" class="ml-4">
           <span class="text-xl uppercase">Šport</span>
-        </router-link>
-        <router-link to="/news/chronicle" class="ml-2">
-          <span class="text-xl uppercase">Kronika</span>
         </router-link>
         <router-link to="/today" class="ml-2">
           <span class="text-xl uppercase">Danes</span>
@@ -85,7 +85,7 @@ export default {
 }
 
 .main-links {
-  @apply flex-row flex-wrap items-center;
+  @apply flex-row flex-wrap items-baseline;
   display: flex;
 }
 

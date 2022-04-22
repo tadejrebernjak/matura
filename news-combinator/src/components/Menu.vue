@@ -13,13 +13,13 @@
       <div class="menu-body">
         <ul>
           <li>
-            <router-link to="/news/sport" @click="close">
-              <span class="text-xl uppercase">Šport</span>
+            <router-link to="/" @click="close">
+              <span class="text-xl uppercase">Domov</span>
             </router-link>
           </li>
           <li>
-            <router-link to="/news/chronicle" @click="close">
-              <span class="text-xl uppercase">Kronika</span>
+            <router-link to="/news/sport" @click="close">
+              <span class="text-xl uppercase">Šport</span>
             </router-link>
           </li>
           <li>

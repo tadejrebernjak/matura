@@ -40,14 +40,6 @@ exports.getArticles = async function (req, res) {
       }).sort({
         timestamp: -1,
       });
-    } else if (req.params.category == "chronicle") {
-      const categories = ["kronika", "crna-kronika", "Črna kronika", "Kronika"];
-
-      articles = await Article.find({
-        category: { $in: categories },
-      }).sort({
-        timestamp: -1,
-      });
     } else {
       articles = await Article.find({}).sort({ timestamp: -1 });
     }
@@ -70,13 +62,6 @@ exports.searchArticles = async function (req, res) {
 
     if (req.params.category == "sport") {
       const categories = ["sport", "sportal", "Sportal"];
-
-      articles = await Article.find({
-        title: { $regex: query, $options: "i" },
-        category: { $in: categories },
-      }).sort({ timestamp: -1 });
-    } else if (req.params.category == "chronicle") {
-      const categories = ["kronika", "crna-kronika", "Črna kronika", "Kronika"];
 
       articles = await Article.find({
         title: { $regex: query, $options: "i" },
@@ -151,7 +136,10 @@ exports.searchUsers = async function (req, res) {
   }
 
   const query = req.params.query;
-  const objID = new ObjectId(query.length < 12 ? "123456789012" : query);
+  let objID;
+  try {
+    objID = new ObjectId(query.length < 12 ? "123456789012" : query);
+  } catch (error) {}
 
   try {
     const users = await User.find({
@@ -231,33 +219,6 @@ exports.updateUser = async function (req, res) {
     } catch (error) {
       console.log(error);
     }
-  }
-};
-
-exports.removePfp = async function (req, res) {
-  if (!req.user.isAdmin) {
-    return res.sendStatus(403);
-  }
-
-  const user = await User.findOne({ _id: req.params.userID });
-
-  if (!user) {
-    return res.sendStatus(404);
-  }
-
-  try {
-    const pathSplit = user.pfp.split("/");
-    const fileDeletePath = "./" + pathSplit[3] + "/" + pathSplit[4];
-    fs.unlinkSync(fileDeletePath);
-  } catch (error) {
-    console.log(error);
-  }
-
-  try {
-    await User.updateOne({ _id: req.params.userID }, { pfp: null });
-  } catch (error) {
-    console.log(error);
-    return res.sendStatus(500);
   }
 };
 

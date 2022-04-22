@@ -1,8 +1,5 @@
 <template>
   <div class="reply">
-    <div class="reply-left">
-      <img :src="reply.user.pfp || defaultPfp" alt="pfp" />
-    </div>
     <div class="reply-right">
       <div class="reply-head">
         <div>
@@ -88,7 +85,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-let defaultPfp = require("@/assets/default-pfp.jpg");
 import moment from "moment";
 import "moment/locale/sl";
 moment.locale("sl");
@@ -104,7 +100,6 @@ export default {
     return {
       replyCreatedAt: this.createdAtString(),
       isEdited: this.isEditedCheck(),
-      defaultPfp: defaultPfp,
       rating: "",
       editing: false,
       editBody: this.reply.body,

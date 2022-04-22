@@ -14,15 +14,6 @@ exports.getArticles = async function (req, res) {
       }).sort({
         timestamp: -1,
       });
-    } else if (req.params.category == "chronicle") {
-      const categories = ["kronika", "crna-kronika", "Črna kronika", "Kronika"];
-
-      articles = await Article.find({
-        category: { $in: categories },
-        hidden: false,
-      }).sort({
-        timestamp: -1,
-      });
     } else {
       articles = await Article.find({ hidden: false }).sort({ timestamp: -1 });
     }
@@ -41,14 +32,6 @@ exports.searchArticles = async function (req, res) {
 
     if (req.params.category == "sport") {
       const categories = ["sport", "sportal", "Sportal"];
-
-      articles = await Article.find({
-        title: { $regex: query, $options: "i" },
-        category: { $in: categories },
-        hidden: false,
-      }).sort({ timestamp: -1 });
-    } else if (req.params.category == "chronicle") {
-      const categories = ["kronika", "crna-kronika", "Črna kronika", "Kronika"];
 
       articles = await Article.find({
         title: { $regex: query, $options: "i" },

@@ -7,26 +7,7 @@
   <div
     class="my-10 border border-gray-400 rounded-md shadow-md flex flex-row flex-wrap sm:flex-nowrap overflow-hidden"
   >
-    <div
-      class="w-full sm:w-2/5 min-w-max sm:border-r border-gray-400 grid items-center justify-center p-4"
-    >
-      <img
-        class="rounded-full object-cover w-64 h-64 border-2 border-gray-400"
-        :src="editUser.pfp || defaultPfp"
-        ref="pfpPreview"
-        alt="Profilna slika"
-      />
-      <div class="mt-2 text-center">
-        <button
-          v-if="editUser.pfp"
-          class="p-2 mt-2 inline m-auto text-white rounded-sm bg-green-500 hover:bg-green-400 text-xl transition duration-200 w-max cursor-pointer"
-          @click="removePfp"
-        >
-          Odstrani
-        </button>
-      </div>
-    </div>
-    <div class="w-full sm:w-3/5">
+    <div class="w-full">
       <div class="form-control">
         <span class="font-bold text-lg">ID: </span>
         <span class="cursor-pointer" @click="copyID(editUser._id)">{{
@@ -111,7 +92,6 @@
 import { mapGetters } from "vuex";
 import router from "../router";
 import AdminService from "../adminService";
-const defaultPfp = require("@/assets/default-pfp.jpg");
 import moment from "moment";
 import "moment/locale/sl";
 moment.locale("sl");
@@ -133,7 +113,6 @@ export default {
       notice: "",
       muteDays: null,
       mutedString: "",
-      defaultPfp: defaultPfp,
     };
   },
   methods: {
@@ -181,23 +160,6 @@ export default {
             message: response,
           });
         }
-      } catch (error) {
-        this.$emit("notify", {
-          type: "error",
-          message: error.message,
-        });
-      }
-    },
-
-    async removePfp() {
-      try {
-        await AdminService.removePfp(this.editUser._id);
-        this.editUser.pfp = null;
-        this.getUser(this.$route.params.id);
-        this.$emit("notify", {
-          type: "success",
-          message: "Profilna slika odstranjena",
-        });
       } catch (error) {
         this.$emit("notify", {
           type: "error",

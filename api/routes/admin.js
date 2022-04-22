@@ -64,12 +64,6 @@ router.put(
   admin_controller.updateUser
 );
 
-router.delete(
-  "/user/pfp/:userID",
-  users_controller.authenticateToken,
-  admin_controller.removePfp
-);
-
 router.post(
   "/user/mute",
   users_controller.authenticateToken,

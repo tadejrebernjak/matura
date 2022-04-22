@@ -10,11 +10,6 @@
         </h1>
       </div>
       <div v-else class="flex">
-        <img
-          :src="user.pfp || pfp"
-          alt="Pfp"
-          class="inline w-14 h-14 rounded-full mr-3"
-        />
         <div class="w-full">
           <h2 class="text-left font-bold text-white text-xl mb-1">
             {{ user.username }}
@@ -59,7 +54,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-let defaultPfp = require("@/assets/default-pfp.jpg");
 import Comment from "../components/Comment";
 import moment from "moment";
 import "moment/locale/sl";
@@ -90,7 +84,6 @@ export default {
     return {
       newComment: "",
       mutedString: "",
-      pfp: defaultPfp,
     };
   },
   computed: {

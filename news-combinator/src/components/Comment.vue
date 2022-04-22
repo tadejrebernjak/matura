@@ -1,8 +1,5 @@
 <template>
   <div class="comment">
-    <div class="comment-left">
-      <img :src="comment.user.pfp || defaultPfp" alt="pfp" />
-    </div>
     <div class="comment-right">
       <div class="comment-head">
         <div>
@@ -134,7 +131,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-let defaultPfp = require("@/assets/default-pfp.jpg");
 import CommentReply from "../components/CommentReply";
 import moment from "moment";
 import "moment/locale/sl";
@@ -159,7 +155,6 @@ export default {
       rating: "",
       newReply: "",
       editBody: this.comment.body,
-      defaultPfp: defaultPfp,
     };
   },
   computed: {

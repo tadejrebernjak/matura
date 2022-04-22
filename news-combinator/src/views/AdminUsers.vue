@@ -14,7 +14,6 @@
   <div class="block overflow-auto">
     <table class="w-full">
       <tr class="rounded-t-md">
-        <th class="pfp">Avatar</th>
         <th class="username">Username</th>
         <th class="email">Email</th>
         <th class="actions">Actions</th>
@@ -26,9 +25,6 @@
         :key="user._id"
         :user="user"
       >
-        <td class="text-center">
-          <img class="avatar" :src="user.pfp || pfp" alt="Avatar" />
-        </td>
         <td>
           {{ user.username }}
         </td>
@@ -71,7 +67,6 @@
 </template>
 
 <script>
-import pfp from "@/assets/default-pfp.jpg";
 import { mapGetters } from "vuex";
 import router from "../router";
 import AdminService from "../adminService";
@@ -106,7 +101,6 @@ export default {
       order: "newest",
       deleteID: "",
       error: "",
-      pfp: pfp,
     };
   },
   methods: {
