@@ -13,11 +13,11 @@ const db = mongoose.connection;
 db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to db"));
 
-const scraperRouter = require("./routes/scraper");
-const articlesRouter = require("./routes/articles");
-const usersRouter = require("./routes/users");
-const adminRouter = require("./routes/admin");
-const scraper_controller = require("./controllers/scraper");
+const scraperRouter = require("./api/routes/scraper");
+const articlesRouter = require("./api/routes/articles");
+const usersRouter = require("./api/routes/users");
+const adminRouter = require("./api/routes/admin");
+const scraper_controller = require("./api/controllers/scraper");
 
 const port = 5000;
 
@@ -29,10 +29,16 @@ app.use(cors());
 
 app.use(express.static("public"));
 
-app.use("/scraper", scraperRouter);
-app.use("/articles", articlesRouter);
-app.use("/users", usersRouter);
-app.use("/admin", adminRouter);
+app.use("/api/scraper", scraperRouter);
+app.use("/api/articles", articlesRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/admin", adminRouter);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(__dirname + "/public"));
+
+  app.get(/.*/, (req, res) => res.sendFile(__dirname + "/public/index.html"));
+}
 
 cron.schedule("*/5 * * * *", async () => {
   try {
