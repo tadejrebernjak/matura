@@ -72,6 +72,7 @@ export default {
   watch: {
     $route: function () {
       this.fadeContent();
+      this.scrollUp();
     },
   },
 };

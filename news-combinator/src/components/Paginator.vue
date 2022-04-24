@@ -81,17 +81,11 @@ export default {
 }
 
 button {
-  @apply p-1 w-14 font-semibold text-gray-600 bg-gradient-to-b from-gray-100 hover:from-gray-200 to-gray-200 border border-gray-400;
+  @apply p-1 w-8 sm:w-14 font-semibold text-gray-600 bg-gradient-to-b from-gray-100 hover:from-gray-200 to-gray-200 border border-gray-400;
   margin-left: -1px;
 }
 
 button.selected {
   @apply from-green-400 to-green-500 text-white;
-}
-
-button.first::after {
-  content: "...";
-  position: absolute;
-  left: -2px;
 }
 </style>

@@ -39,7 +39,7 @@ export default {
 
 <style scoped>
 button {
-  @apply p-1 px-3 mx-1 rounded-sm font-semibold text-white bg-gray-400 hover:bg-gray-500 transition-all duration-300;
+  @apply p-1 px-3 m-1 rounded-sm font-semibold text-white bg-gray-400 hover:bg-gray-500 transition-all duration-300;
 }
 
 button.selected {

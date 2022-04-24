@@ -53,6 +53,7 @@ export default {
 .dropdown {
   position: relative;
   display: inline-block;
+  @apply my-2;
 }
 
 .dropdown-button {

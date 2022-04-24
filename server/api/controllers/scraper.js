@@ -35,7 +35,9 @@ exports.scrape24ur = async function () {
   );
 
   try {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     const page = await browser.newPage();
 
     await page.goto(provider.url, {
@@ -368,7 +370,8 @@ function getTimestamp(date, time) {
 }
 
 exports.insertArticles = async function (articles) {
-  let counter = 0;
+  let saves = 0;
+  let updates = 0;
   try {
     for (let i = 0; i < articles.length; i++) {
       const count = await Article.countDocuments({ url: articles[i].url });
@@ -378,10 +381,29 @@ exports.insertArticles = async function (articles) {
             console.log(error);
           }
         });
-        counter++;
+        saves++;
+      } else if (articles[i].source == "24ur") {
+        const oldArticle = await Article.findOne({ url: articles[i].url });
+
+        if (oldArticle.timestamp.getTime() != articles[i].timestamp.getTime()) {
+          console.log(articles[i]);
+          console.log(oldArticle);
+
+          const update = {
+            timestamp: articles[i].timestamp,
+            title: articles[i].title,
+            summary: articles[i].summary,
+            image: articles[i].image,
+            time: articles[i].time,
+            date: articles[i].date,
+          };
+
+          await Article.findOneAndUpdate({ _id: oldArticle._id }, update);
+          updates++;
+        }
       }
     }
-    console.log("Saved " + counter + " articles to the database");
+    console.log("Saved " + saves + " and updated " + updates + " articles");
   } catch (error) {
     console.log(error);
   }

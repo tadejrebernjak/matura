@@ -29,7 +29,8 @@
     </div>
     <div v-else class="new-comment-container">
       <h1 class="text-white text-xl text-center font-bold">
-        Morate se prijaviti, preden lahko komentirate.
+        Če želite komentirati, se morate
+        <router-link to="/login">prijaviti</router-link>
       </h1>
     </div>
     <div class="comments-container">

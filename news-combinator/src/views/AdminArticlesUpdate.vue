@@ -3,11 +3,12 @@
     <router-link to="/admin">Admin</router-link>
     > <span class="text-green-600">Posodabljanje novic</span>
   </h1>
-  <div class="flex flex-row justify-between">
+  <div class="flex flex-row justify-between flex-wrap">
     <button @click="updateArticles('all')">Vse</button>
     <button @click="updateArticles('24ur')">24ur</button>
     <button @click="updateArticles('siol')">Siol</button>
     <button @click="updateArticles('delo')">Delo</button>
+    <button @click="updateArticles('slovenskenovice')">Slovenske Novice</button>
   </div>
   <div class="flex justify-center mt-10" v-if="loading">
     <img :src="loadingGif" alt="loading..." />
@@ -93,7 +94,7 @@ export default {
 
 <style scoped>
 button {
-  @apply p-3 w-40 text-center font-semibold text-2xl text-green-100 hover:text-white bg-gradient-to-r from-green-400 to-green-500 border-2 border-green-600 rounded-md shadow-lg cursor-pointer transition-all duration-300;
+  @apply p-3 my-1 w-40 text-center font-semibold text-2xl text-green-100 hover:text-white bg-gradient-to-r from-green-400 to-green-500 border-2 border-green-600 rounded-md shadow-lg cursor-pointer transition-all duration-300;
 }
 
 table {
