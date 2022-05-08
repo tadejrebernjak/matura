@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -19,7 +20,7 @@ const usersRouter = require("./api/routes/users");
 const adminRouter = require("./api/routes/admin");
 const scraper_controller = require("./api/controllers/scraper");
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 const app = express();
 
@@ -40,7 +41,17 @@ if (process.env.NODE_ENV === "production") {
   app.get(/.*/, (req, res) => res.sendFile(__dirname + "/public/index.html"));
 }
 
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/5 * * * *", updateArticles);
+
+app.listen(port, () =>
+  console.log(`Server listening on http://localhost:${port}`)
+);
+
+updateArticles();
+
+async function updateArticles() {
+  console.log("Updating articles...");
+
   try {
     let stirindvajstur = await scraper_controller.scrape24ur();
     let delo = await scraper_controller.scrapeDelo();
@@ -55,8 +66,4 @@ cron.schedule("*/5 * * * *", async () => {
   } catch (error) {
     console.log(error);
   }
-});
-
-app.listen(port, () =>
-  console.log(`Server listening on http://localhost:${port}`)
-);
+}
