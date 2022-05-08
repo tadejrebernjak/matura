@@ -11,13 +11,13 @@
           <span class="text-4xl">Novice</span>
         </router-link>
         <router-link to="/" class="ml-4">
-          <span class="text-xl uppercase">Domov</span>
+          <span class="text-xl uppercase hover:underline">Domov</span>
         </router-link>
         <router-link to="/news/sport" class="ml-4">
-          <span class="text-xl uppercase">Šport</span>
+          <span class="text-xl uppercase hover:underline">Šport</span>
         </router-link>
-        <router-link to="/today" class="ml-2">
-          <span class="text-xl uppercase">Danes</span>
+        <router-link to="/today" class="ml-4">
+          <span class="text-xl uppercase hover:underline">Danes</span>
         </router-link>
       </div>
       <div class="flex content-center">
