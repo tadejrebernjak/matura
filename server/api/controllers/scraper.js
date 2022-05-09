@@ -274,7 +274,12 @@ exports.scrapeSlovenskeNovice = async function () {
           category: category,
         });
 
-        articles.push(article);
+        if (
+          article.category != "bulvar" ||
+          !article.summary.includes("zapeljiv")
+        ) {
+          articles.push(article);
+        }
       }
     });
 
@@ -386,9 +391,6 @@ exports.insertArticles = async function (articles) {
         const oldArticle = await Article.findOne({ url: articles[i].url });
 
         if (oldArticle.timestamp.getTime() != articles[i].timestamp.getTime()) {
-          console.log(articles[i]);
-          console.log(oldArticle);
-
           const update = {
             timestamp: articles[i].timestamp,
             title: articles[i].title,

@@ -1,7 +1,10 @@
 let { Article, Comment } = require("../models/article");
 
 exports.addArticleComment = async function (req, res) {
-  if (new Date(req.user.muteExpiration) > new Date()) {
+  if (
+    req.user.muteExpiration &&
+    new Date(req.user.muteExpiration) > new Date()
+  ) {
     return res.sendStatus(403);
   }
 

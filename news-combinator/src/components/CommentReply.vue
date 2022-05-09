@@ -30,7 +30,7 @@
           </p>
         </div>
         <div
-          v-if="authenticated && (user._id === reply.userID || user.isAdmin)"
+          v-if="authenticated && (user._id === reply.user._id || user.isAdmin)"
           class="text-xl cursor-pointer hover:text-gray-600"
           @click="$emit('deleteReply', reply._id)"
         >
