@@ -13,14 +13,14 @@ Some things may not work, such as the scraping scripts, because the source websi
 
 All styles are hand-made with tailwindCSS and responsive to screens of various sizes.
 
-- The view article page on a PC
+- The view article page on a PC<br/>
 ![image](https://github.com/tadejrebernjak/matura/assets/89967862/52ee62c1-ce16-433e-bd1f-633696c7f52f)
 
-- Comments and replies
+- Comments and replies<br/>
 ![image](https://github.com/tadejrebernjak/matura/assets/89967862/0199779a-78de-4835-b684-f77bdc07c607)
 
-- Part of the admin panel (blocking a user from commenting)
+- Part of the admin panel (blocking a user from commenting)<br/>
 ![image](https://github.com/tadejrebernjak/matura/assets/89967862/0c634d6a-f774-4a44-9213-eaa047dfd8a2)
 
-- Home page on a mobile phone
+- Home page on a mobile phone<br/>
 ![image](https://github.com/tadejrebernjak/matura/assets/89967862/f77d20d5-56b6-4c12-bf80-8d741b12ec72)
